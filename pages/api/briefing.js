@@ -2,6 +2,7 @@
 // Generates AI economic briefing using Claude with daily caching
 
 import Anthropic from '@anthropic-ai/sdk';
+import { getFredData } from '../../lib/fred';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -104,16 +105,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Fetch fresh FRED data
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
-
-    const fredRes = await fetch(`${baseUrl}/api/fred`);
-    if (!fredRes.ok) {
-      throw new Error('Failed to fetch FRED data');
-    }
-    const fredData = await fredRes.json();
+    // Fetch fresh FRED data directly (no HTTP call)
+    const fredData = await getFredData();
 
     // Generate briefing with Claude
     const briefing = await generateBriefing(fredData);
@@ -135,7 +128,6 @@ export default async function handler(req, res) {
     res.status(500).json({
       error: 'Failed to generate briefing',
       details: error.message,
-      // Provide a static fallback
       fallback: true,
       briefing: "Economic briefing temporarily unavailable. Please check the dashboard charts for current data.",
     });
