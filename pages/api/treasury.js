@@ -51,13 +51,13 @@ export default async function handler(req, res) {
       fetchFiscalData('/v2/accounting/od/avg_interest_rates', {
         sort: '-record_date',
         limit: 50,
-        fields: 'record_date,security_type_desc,avg_interest_rate_amt'
+        fields: 'record_date,security_desc,avg_interest_rate_amt'
       }),
-      // Upcoming Treasury auctions
+      // Treasury auctions (sorted by most recent)
       fetchFiscalData('/v1/accounting/od/upcoming_auctions', {
-        sort: 'auction_date',
+        sort: '-auction_date',
         limit: 10,
-        fields: 'auction_date,security_type,security_term,offering_amt,announcement_date'
+        fields: 'auction_date,security_type,security_term,offering_amt'
       }),
     ]);
 
@@ -94,7 +94,7 @@ export default async function handler(req, res) {
     const interestRates = avgInterestRates
       .filter(d => d.record_date === latestRateDate && d.avg_interest_rate_amt)
       .map(d => ({
-        type: d.security_type_desc,
+        type: d.security_desc,
         rate: parseFloat(d.avg_interest_rate_amt)
       }))
       .filter(d => d.rate > 0)
@@ -104,15 +104,15 @@ export default async function handler(req, res) {
     const totalRate = interestRates.reduce((sum, r) => sum + r.rate, 0);
     const avgRate = interestRates.length > 0 ? totalRate / interestRates.length : null;
 
-    // Process upcoming auctions
+    // Process auctions (show recent auctions since API data may be stale)
     const auctions = upcomingAuctions
-      .filter(a => a.auction_date && new Date(a.auction_date) >= new Date())
+      .filter(a => a.auction_date)
       .map(a => ({
         date: a.auction_date,
         type: a.security_type,
         term: a.security_term,
-        amount: a.offering_amt ? formatCurrency(a.offering_amt * 1e6, 1) : 'TBD',
-        rawAmount: a.offering_amt ? parseFloat(a.offering_amt) * 1e6 : 0
+        amount: a.offering_amt ? formatCurrency(parseFloat(a.offering_amt), 1) : 'TBD',
+        rawAmount: a.offering_amt ? parseFloat(a.offering_amt) : 0
       }));
 
     // Estimate annual interest expense (rough: total debt * avg rate)

@@ -346,8 +346,8 @@ export default function TreasuryDashboard() {
               </div>
             </ChartCard>
 
-            {/* Upcoming Auctions */}
-            <ChartCard title="Upcoming Treasury Auctions" description="Scheduled debt issuances">
+            {/* Recent Auctions */}
+            <ChartCard title="Recent Treasury Auctions" description="Latest debt issuances">
               <div className="h-64 overflow-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -369,7 +369,7 @@ export default function TreasuryDashboard() {
                     ) : (
                       <tr>
                         <td colSpan={3} className="py-4 text-center text-slate-500">
-                          No upcoming auctions scheduled
+                          No auction data available
                         </td>
                       </tr>
                     )}
