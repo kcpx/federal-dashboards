@@ -1,17 +1,11 @@
 // pages/api/briefing.js
-// Generates AI economic briefing using Claude with daily caching
+// Generates AI economic briefing using Claude with persistent daily caching via Vercel KV
 
 import Anthropic from '@anthropic-ai/sdk';
+import { kv } from '@vercel/kv';
 import { getFredData } from '../../lib/fred';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
-// Simple in-memory cache for serverless (resets on cold start)
-// For production, use Redis/Vercel KV/database
-let cachedBriefing = null;
-let cacheDate = null;
+const CACHE_KEY = 'economic-briefing';
 
 function getTodayString() {
   return new Date().toISOString().split('T')[0];
@@ -57,6 +51,10 @@ LABOR MARKET:
 }
 
 async function generateBriefing(fredData) {
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  });
+
   const dataContext = formatDataForPrompt(fredData);
 
   const prompt = `${dataContext}
@@ -95,36 +93,65 @@ export default async function handler(req, res) {
   try {
     const today = getTodayString();
 
-    // Check cache first
-    if (cachedBriefing && cacheDate === today) {
+    // Check persistent cache first (Vercel KV)
+    let cached = null;
+    try {
+      cached = await kv.get(CACHE_KEY);
+    } catch (kvError) {
+      console.log('KV not configured, skipping cache check:', kvError.message);
+    }
+
+    // If we have a cached briefing from today, return it
+    if (cached && cached.date === today) {
       return res.status(200).json({
-        briefing: cachedBriefing,
-        date: today,
+        briefing: cached.briefing,
+        date: cached.date,
         cached: true,
-        generatedAt: cacheDate,
+        generatedAt: cached.generatedAt,
       });
     }
 
-    // Fetch fresh FRED data directly (no HTTP call)
+    // No valid cache - generate new briefing
     const fredData = await getFredData();
-
-    // Generate briefing with Claude
     const briefing = await generateBriefing(fredData);
+    const generatedAt = new Date().toISOString();
 
-    // Cache the result
-    cachedBriefing = briefing;
-    cacheDate = today;
+    // Store in persistent cache (expires in 25 hours to ensure daily refresh)
+    try {
+      await kv.set(CACHE_KEY, {
+        briefing,
+        date: today,
+        generatedAt,
+      }, { ex: 90000 }); // 25 hours in seconds
+    } catch (kvError) {
+      console.log('KV not configured, skipping cache write:', kvError.message);
+    }
 
     res.status(200).json({
       briefing,
       date: today,
       cached: false,
-      generatedAt: new Date().toISOString(),
+      generatedAt,
     });
   } catch (error) {
     console.error('Briefing API error:', error);
 
-    // Return a fallback if API fails
+    // Try to return cached version even if expired
+    try {
+      const cached = await kv.get(CACHE_KEY);
+      if (cached?.briefing) {
+        return res.status(200).json({
+          briefing: cached.briefing,
+          date: cached.date,
+          cached: true,
+          stale: true,
+          generatedAt: cached.generatedAt,
+        });
+      }
+    } catch (kvError) {
+      // KV not available
+    }
+
     res.status(500).json({
       error: 'Failed to generate briefing',
       details: error.message,
