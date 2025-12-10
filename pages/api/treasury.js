@@ -107,13 +107,16 @@ export default async function handler(req, res) {
     // Process auctions (show recent auctions since API data may be stale)
     const auctions = upcomingAuctions
       .filter(a => a.auction_date)
-      .map(a => ({
-        date: a.auction_date,
-        type: a.security_type,
-        term: a.security_term,
-        amount: a.offering_amt ? formatCurrency(parseFloat(a.offering_amt), 1) : 'TBD',
-        rawAmount: a.offering_amt ? parseFloat(a.offering_amt) : 0
-      }));
+      .map(a => {
+        const amt = a.offering_amt && a.offering_amt !== 'null' ? parseFloat(a.offering_amt) : null;
+        return {
+          date: a.auction_date,
+          type: a.security_type,
+          term: a.security_term,
+          amount: amt ? formatCurrency(amt, 1) : 'TBD',
+          rawAmount: amt || 0
+        };
+      });
 
     // Estimate annual interest expense (rough: total debt * avg rate)
     const annualInterest = totalDebt && avgRate
