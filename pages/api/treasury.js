@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       fetchFiscalData('/v2/accounting/od/debt_to_penny', {
         sort: '-record_date',
         limit: 30,
-        fields: 'record_date,tot_pub_debt_out_amt'
+        fields: 'record_date,tot_pub_debt_out_amt,debt_held_public_amt,intragov_hold_amt'
       }),
       // Debt by type (marketable vs non-marketable breakdown)
       fetchFiscalData('/v2/accounting/od/debt_outstanding', {
@@ -78,16 +78,16 @@ export default async function handler(req, res) {
       }))
       .reverse();
 
-    // Process debt composition by type
-    const latestDate = debtOutstanding[0]?.record_date;
-    const debtByType = debtOutstanding
-      .filter(d => d.record_date === latestDate)
-      .map(d => ({
-        type: d.security_type_desc,
-        amount: parseFloat(d.debt_outstanding_amt),
-        formatted: formatCurrency(d.debt_outstanding_amt, 2)
-      }))
-      .sort((a, b) => b.amount - a.amount);
+    // Process debt composition (Public vs Intragovernmental)
+    const debtByType = [];
+    if (latestDebt?.debt_held_public_amt && latestDebt?.intragov_hold_amt) {
+      const publicDebt = parseFloat(latestDebt.debt_held_public_amt);
+      const intragovDebt = parseFloat(latestDebt.intragov_hold_amt);
+      debtByType.push(
+        { type: 'Debt Held by Public', amount: publicDebt, formatted: formatCurrency(publicDebt, 2) },
+        { type: 'Intragovernmental', amount: intragovDebt, formatted: formatCurrency(intragovDebt, 2) }
+      );
+    }
 
     // Process average interest rates
     const latestRateDate = avgInterestRates[0]?.record_date;

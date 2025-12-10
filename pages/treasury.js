@@ -81,11 +81,8 @@ const DEMO_DATA = {
     { date: '2025-12-09', value: 36.2 },
   ],
   debtByType: [
-    { type: 'Treasury Notes', amount: 14e12, formatted: '14.0T' },
-    { type: 'Treasury Bills', amount: 6e12, formatted: '6.0T' },
-    { type: 'Treasury Bonds', amount: 5e12, formatted: '5.0T' },
-    { type: 'TIPS', amount: 2e12, formatted: '2.0T' },
-    { type: 'Other', amount: 9.2e12, formatted: '9.2T' },
+    { type: 'Debt Held by Public', amount: 28.5e12, formatted: '28.5T' },
+    { type: 'Intragovernmental', amount: 7.7e12, formatted: '7.7T' },
   ],
   interestRates: [
     { type: 'Treasury Bills', rate: 5.2 },
@@ -272,13 +269,13 @@ export default function TreasuryDashboard() {
             </ChartCard>
 
             {/* Debt Composition */}
-            <ChartCard title="Debt Composition" description="Outstanding debt by security type">
+            <ChartCard title="Debt Holders" description="Public vs Intragovernmental holdings">
               <div className="h-64 flex items-center">
                 <div className="w-1/2">
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                       <Pie
-                        data={data.debtByType.slice(0, 5)}
+                        data={data.debtByType}
                         cx="50%"
                         cy="50%"
                         innerRadius={40}
@@ -287,8 +284,8 @@ export default function TreasuryDashboard() {
                         dataKey="amount"
                         nameKey="type"
                       >
-                        {data.debtByType.slice(0, 5).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        {data.debtByType.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={index === 0 ? '#ef4444' : '#3b82f6'} />
                         ))}
                       </Pie>
                       <Tooltip
@@ -298,14 +295,19 @@ export default function TreasuryDashboard() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="w-1/2 space-y-2">
-                  {data.debtByType.slice(0, 5).map((item, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }}></div>
-                      <span className="text-slate-400 text-sm flex-1 truncate">{item.type}</span>
-                      <span className="text-white text-sm font-medium">${item.formatted}</span>
+                <div className="w-1/2 space-y-4">
+                  {data.debtByType.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: i === 0 ? '#ef4444' : '#3b82f6' }}></div>
+                      <div>
+                        <p className="text-white text-sm font-medium">${item.formatted}</p>
+                        <p className="text-slate-400 text-xs">{item.type}</p>
+                      </div>
                     </div>
                   ))}
+                  {data.debtByType.length === 0 && (
+                    <p className="text-slate-500 text-sm">No data available</p>
+                  )}
                 </div>
               </div>
             </ChartCard>
