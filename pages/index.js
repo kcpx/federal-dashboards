@@ -191,11 +191,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="text-center mt-12 text-slate-500 text-sm">
-            <p>Built as a portfolio project for federal fintech roles • December 2025</p>
-          </div>
-        </div>
+                  </div>
       </main>
     </>
   )
