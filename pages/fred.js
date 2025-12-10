@@ -136,11 +136,128 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null
 }
 
+const BriefingCard = ({ briefing, loading, error, date }) => {
+  const formattedDate = date ? new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) : new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  if (loading) {
+    return (
+      <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 border border-blue-500/30 rounded-xl p-6 mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <svg className="w-5 h-5 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">AI Economic Briefing</h2>
+            <p className="text-slate-400 text-sm">Generating analysis...</p>
+          </div>
+        </div>
+        <div className="animate-pulse space-y-3">
+          <div className="h-4 bg-slate-700 rounded w-3/4"></div>
+          <div className="h-4 bg-slate-700 rounded w-full"></div>
+          <div className="h-4 bg-slate-700 rounded w-5/6"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !briefing) {
+    return (
+      <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700 rounded-xl p-6 mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
+            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">AI Economic Briefing</h2>
+            <p className="text-slate-500 text-sm">Briefing unavailable — view charts below</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Parse the briefing into sections
+  const renderBriefing = (text) => {
+    // Convert markdown-style formatting to JSX
+    const lines = text.split('\n').filter(line => line.trim());
+
+    return lines.map((line, i) => {
+      // Headers (bold text like **The Big Picture**)
+      if (line.includes('**')) {
+        const parts = line.split('**');
+        return (
+          <p key={i} className="mb-2">
+            {parts.map((part, j) =>
+              j % 2 === 1 ? <strong key={j} className="text-white">{part}</strong> : <span key={j}>{part}</span>
+            )}
+          </p>
+        );
+      }
+      // Bullet points
+      if (line.trim().startsWith('-') || line.trim().startsWith('•')) {
+        return (
+          <li key={i} className="ml-4 mb-1 text-slate-300">
+            {line.replace(/^[-•]\s*/, '')}
+          </li>
+        );
+      }
+      // Regular paragraphs
+      return <p key={i} className="mb-3 text-slate-300">{line}</p>;
+    });
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 border border-blue-500/30 rounded-xl p-6 mb-8">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">AI Economic Briefing</h2>
+            <p className="text-slate-400 text-sm">{formattedDate}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20">
+          <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+          <span className="text-blue-400 text-xs font-medium">Powered by Claude</span>
+        </div>
+      </div>
+      <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed">
+        {renderBriefing(briefing)}
+      </div>
+    </div>
+  );
+};
+
 export default function FredDashboard() {
   const [data, setData] = useState(DEMO_DATA)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(new Date())
+
+  // Briefing state
+  const [briefing, setBriefing] = useState(null)
+  const [briefingLoading, setBriefingLoading] = useState(true)
+  const [briefingError, setBriefingError] = useState(null)
+  const [briefingDate, setBriefingDate] = useState(null)
 
   useEffect(() => {
     async function fetchFredData() {
@@ -212,6 +329,32 @@ export default function FredDashboard() {
     fetchFredData()
   }, [])
 
+  // Fetch AI briefing
+  useEffect(() => {
+    async function fetchBriefing() {
+      try {
+        setBriefingLoading(true)
+        const res = await fetch('/api/briefing')
+        const data = await res.json()
+
+        if (data.error && !data.briefing) {
+          throw new Error(data.details || 'Failed to generate briefing')
+        }
+
+        setBriefing(data.briefing)
+        setBriefingDate(data.date)
+        setBriefingError(null)
+      } catch (err) {
+        console.error('Error fetching briefing:', err)
+        setBriefingError(err.message)
+      } finally {
+        setBriefingLoading(false)
+      }
+    }
+
+    fetchBriefing()
+  }, [])
+
   return (
     <>
       <Head>
@@ -255,6 +398,14 @@ export default function FredDashboard() {
               </span>
             </div>
           </div>
+
+          {/* AI Economic Briefing */}
+          <BriefingCard
+            briefing={briefing}
+            loading={briefingLoading}
+            error={briefingError}
+            date={briefingDate}
+          />
 
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
