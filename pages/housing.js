@@ -97,13 +97,13 @@ const VerdictBadge = ({ ratio, isLive }) => {
   }
 
   return (
-    <div className={`bg-gradient-to-br ${bgColor} border rounded-xl p-6 text-center relative`}>
+    <div className={`bg-gradient-to-br ${bgColor} border rounded-xl p-4 md:p-6 text-center relative`}>
       <div className="absolute top-3 right-3">
         <DataTag isLive={isLive} label="Sample" lastUpdate="FY 2025" />
       </div>
-      <div className={`text-4xl mb-2`}>{icon}</div>
-      <h3 className={`text-2xl font-bold ${textColor} mb-2`}>{verdict}</h3>
-      <p className="text-slate-400 text-sm">{description}</p>
+      <div className={`text-3xl md:text-4xl mb-2`}>{icon}</div>
+      <h3 className={`text-xl md:text-2xl font-bold ${textColor} mb-2`}>{verdict}</h3>
+      <p className="text-slate-400 text-xs md:text-sm">{description}</p>
       <div className="mt-4 pt-4 border-t border-slate-700">
         <p className="text-slate-500 text-xs">
           {ratio.toFixed(0)}% of income on housing • Target: ≤30%
@@ -129,49 +129,49 @@ const DownPaymentCalculator = ({ homePrice, monthlyIncome, monthlyRent, isLive }
   const yearsTo5 = monthlySavings > 0 ? (downPayment5 / (monthlySavings * 12)).toFixed(1) : '∞';
 
   return (
-    <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🎯</span>
-          <h3 className="text-lg font-semibold text-white">Years to Save Down Payment</h3>
+          <span className="text-xl md:text-2xl">🎯</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Years to Save Down Payment</h3>
         </div>
         <DataTag isLive={isLive} label="Calculator" />
       </div>
 
-      <p className="text-slate-400 text-sm mb-4">
+      <p className="text-slate-400 text-xs md:text-sm mb-4">
         Based on saving {formatCurrency(monthlySavings)}/mo (50% of post-rent income)
       </p>
 
-      <div className="space-y-3">
-        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+      <div className="space-y-2 md:space-y-3">
+        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-2 md:p-3">
           <div>
-            <p className="text-slate-300 font-medium">20% Down (No PMI)</p>
-            <p className="text-slate-500 text-sm">{formatCurrency(downPayment20)}</p>
+            <p className="text-slate-300 text-sm md:text-base font-medium">20% Down (No PMI)</p>
+            <p className="text-slate-500 text-xs md:text-sm">{formatCurrency(downPayment20)}</p>
           </div>
           <div className="text-right">
-            <p className="text-purple-400 text-2xl font-bold">{yearsTo20}</p>
+            <p className="text-purple-400 text-xl md:text-2xl font-bold">{yearsTo20}</p>
             <p className="text-slate-500 text-xs">years</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-2 md:p-3">
           <div>
-            <p className="text-slate-300 font-medium">10% Down</p>
-            <p className="text-slate-500 text-sm">{formatCurrency(downPayment10)}</p>
+            <p className="text-slate-300 text-sm md:text-base font-medium">10% Down</p>
+            <p className="text-slate-500 text-xs md:text-sm">{formatCurrency(downPayment10)}</p>
           </div>
           <div className="text-right">
-            <p className="text-indigo-400 text-2xl font-bold">{yearsTo10}</p>
+            <p className="text-indigo-400 text-xl md:text-2xl font-bold">{yearsTo10}</p>
             <p className="text-slate-500 text-xs">years</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-2 md:p-3">
           <div>
-            <p className="text-slate-300 font-medium">5% Down (FHA)</p>
-            <p className="text-slate-500 text-sm">{formatCurrency(downPayment5)}</p>
+            <p className="text-slate-300 text-sm md:text-base font-medium">5% Down (FHA)</p>
+            <p className="text-slate-500 text-xs md:text-sm">{formatCurrency(downPayment5)}</p>
           </div>
           <div className="text-right">
-            <p className="text-blue-400 text-2xl font-bold">{yearsTo5}</p>
+            <p className="text-blue-400 text-xl md:text-2xl font-bold">{yearsTo5}</p>
             <p className="text-slate-500 text-xs">years</p>
           </div>
         </div>
@@ -220,33 +220,33 @@ const RoommateMath = ({ studioRent, oneBrRent, twoBrRent, threeBrRent, isLive })
   const baseline = studioRent;
 
   return (
-    <div className="bg-gradient-to-br from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🏠</span>
-          <h3 className="text-lg font-semibold text-white">Roommate Math</h3>
+          <span className="text-xl md:text-2xl">🏠</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Roommate Math</h3>
         </div>
         <DataTag isLive={isLive} label="Sample" lastUpdate="FY 2025" />
       </div>
 
-      <p className="text-slate-400 text-sm mb-4">
+      <p className="text-slate-400 text-xs md:text-sm mb-4">
         See how much you save by sharing housing costs
       </p>
 
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         {scenarios.map((s, i) => {
           const savings = baseline - s.perPerson;
           const savingsPercent = ((savings / baseline) * 100).toFixed(0);
           const isBaseline = i === 0;
 
           return (
-            <div key={s.label} className={`bg-slate-800/50 rounded-lg p-3 ${isBaseline ? 'border border-slate-600' : ''}`}>
+            <div key={s.label} className={`bg-slate-800/50 rounded-lg p-2 md:p-3 ${isBaseline ? 'border border-slate-600' : ''}`}>
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <span>{s.icon}</span>
-                  <span className="text-slate-300 text-sm">{s.label}</span>
+                  <span className="text-sm md:text-base">{s.icon}</span>
+                  <span className="text-slate-300 text-xs md:text-sm">{s.label}</span>
                 </div>
-                <span className="text-white font-semibold">{formatCurrency(s.perPerson)}/mo</span>
+                <span className="text-white text-sm md:text-base font-semibold">{formatCurrency(s.perPerson)}/mo</span>
               </div>
               {!isBaseline && savings > 0 && (
                 <div className="flex justify-end">
@@ -380,21 +380,21 @@ const ZipComparison = ({ income, bedrooms }) => {
   const affordableCount = results.filter(r => r?.affordable).length;
 
   return (
-    <div className="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 border border-emerald-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 border border-emerald-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">📍</span>
-          <h3 className="text-lg font-semibold text-white">Where You CAN Afford</h3>
+          <span className="text-xl md:text-2xl">📍</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Where You CAN Afford</h3>
         </div>
         <DataTag isLive={true} />
       </div>
 
-      <p className="text-slate-400 text-sm mb-4">
+      <p className="text-slate-400 text-xs md:text-sm mb-4">
         Compare up to 3 ZIP codes to find affordable options at your income ({formatCurrency(income)}/yr)
       </p>
 
       {/* ZIP Inputs */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4">
         {[0, 1, 2].map((i) => (
           <div key={i}>
             <input
@@ -411,7 +411,7 @@ const ZipComparison = ({ income, bedrooms }) => {
       </div>
 
       {/* Results */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 md:gap-3">
         {results.map((r, i) => {
           if (!r) {
             return (
@@ -475,24 +475,24 @@ const AffordabilityGauge = ({ ratio, label }) => {
 
   return (
     <div className="text-center">
-      <div className="relative w-32 h-32 mx-auto mb-3">
-        <svg className="w-32 h-32 transform -rotate-90">
-          <circle cx="64" cy="64" r="56" stroke="#1e293b" strokeWidth="12" fill="none" />
-          <circle 
-            cx="64" cy="64" r="56" 
-            stroke={getColor(ratio)} 
-            strokeWidth="12" 
+      <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-2 md:mb-3">
+        <svg className="w-24 h-24 md:w-32 md:h-32 transform -rotate-90">
+          <circle cx="50%" cy="50%" r="40%" stroke="#1e293b" strokeWidth="10" fill="none" />
+          <circle
+            cx="50%" cy="50%" r="40%"
+            stroke={getColor(ratio)}
+            strokeWidth="10"
             fill="none"
-            strokeDasharray={`${(Math.min(ratio, 50) / 50) * 352} 352`}
+            strokeDasharray={`${(Math.min(ratio, 50) / 50) * 251} 251`}
             strokeLinecap="round"
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-white">{ratio.toFixed(0)}%</span>
+          <span className="text-lg md:text-2xl font-bold text-white">{ratio.toFixed(0)}%</span>
           <span className="text-xs text-slate-400">of income</span>
         </div>
       </div>
-      <p className="text-sm font-medium" style={{ color: getColor(ratio) }}>{getStatus(ratio)}</p>
+      <p className="text-xs md:text-sm font-medium" style={{ color: getColor(ratio) }}>{getStatus(ratio)}</p>
       <p className="text-xs text-slate-500 mt-1">{label}</p>
     </div>
   )
@@ -508,8 +508,8 @@ const CostBreakdownChart = ({ rent, utilities, insurance, savings, remaining }) 
   ].filter(d => d.value > 0)
 
   return (
-    <div className="flex items-center gap-8">
-      <div className="w-40 h-40">
+    <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-8">
+      <div className="w-32 h-32 md:w-40 md:h-40">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -528,12 +528,12 @@ const CostBreakdownChart = ({ rent, utilities, insurance, savings, remaining }) 
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <div className="space-y-2">
+      <div className="grid grid-cols-2 sm:grid-cols-1 gap-2">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ background: item.color }}></div>
-            <span className="text-sm text-slate-400">{item.name}:</span>
-            <span className="text-sm font-medium text-white">{formatCurrency(item.value)}</span>
+            <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full" style={{ background: item.color }}></div>
+            <span className="text-xs md:text-sm text-slate-400">{item.name}:</span>
+            <span className="text-xs md:text-sm font-medium text-white">{formatCurrency(item.value)}</span>
           </div>
         ))}
       </div>
@@ -558,17 +558,17 @@ const RentVsBuyAnalysis = ({ monthlyRent, homePrice, downPayment, mortgageRate }
   const isBuyingCheaper = totalMonthlyOwnership < monthlyRent
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">Rent vs Buy Analysis</h3>
-      
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
-        <div className={`p-4 rounded-lg ${!isBuyingCheaper ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-slate-700/50'}`}>
-          <p className="text-slate-400 text-sm mb-2">Monthly Rent</p>
-          <p className="text-3xl font-bold text-white">{formatCurrency(monthlyRent)}</p>
+    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+      <h3 className="text-base md:text-lg font-semibold text-white mb-4">Rent vs Buy Analysis</h3>
+
+      <div className="grid grid-cols-2 gap-3 md:gap-6 mb-4 md:mb-6">
+        <div className={`p-3 md:p-4 rounded-lg ${!isBuyingCheaper ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-slate-700/50'}`}>
+          <p className="text-slate-400 text-xs md:text-sm mb-2">Monthly Rent</p>
+          <p className="text-xl md:text-3xl font-bold text-white">{formatCurrency(monthlyRent)}</p>
         </div>
-        <div className={`p-4 rounded-lg ${isBuyingCheaper ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-slate-700/50'}`}>
-          <p className="text-slate-400 text-sm mb-2">Monthly Ownership Cost</p>
-          <p className="text-3xl font-bold text-white">{formatCurrency(totalMonthlyOwnership)}</p>
+        <div className={`p-3 md:p-4 rounded-lg ${isBuyingCheaper ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-slate-700/50'}`}>
+          <p className="text-slate-400 text-xs md:text-sm mb-2">Monthly Ownership Cost</p>
+          <p className="text-xl md:text-3xl font-bold text-white">{formatCurrency(totalMonthlyOwnership)}</p>
         </div>
       </div>
 
@@ -756,7 +756,7 @@ export default function HousingAffordability() {
         <meta name="description" content="Calculate housing affordability by location" />
       </Head>
 
-      <main className="min-h-screen bg-slate-900 p-6">
+      <main className="min-h-screen bg-slate-900 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -790,11 +790,11 @@ export default function HousingAffordability() {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Input Panel */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Your Information</h2>
+            <div className="lg:col-span-1 space-y-4 md:space-y-6">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+                <h2 className="text-base md:text-lg font-semibold text-white mb-4">Your Information</h2>
                 
                 {/* ZIP Code Lookup */}
                 <div className="mb-4 p-3 bg-slate-700/50 rounded-lg border border-slate-600">
@@ -913,9 +913,9 @@ export default function HousingAffordability() {
               </div>
 
               {/* Metro Stats */}
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">{locationName}</h3>
+                  <h3 className="text-base md:text-lg font-semibold text-white">{locationName}</h3>
                   {isLiveFmr && (
                     <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">LIVE</span>
                   )}
@@ -948,7 +948,7 @@ export default function HousingAffordability() {
             </div>
 
             {/* Results Panel */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 md:space-y-6">
               {/* 1. THE ANSWER: Verdict Badge */}
               <VerdictBadge ratio={calculations.rentToIncomeRatio} isLive={isLiveFmr} />
 
@@ -956,7 +956,7 @@ export default function HousingAffordability() {
               <ZipComparison income={income} bedrooms={bedrooms} />
 
               {/* 3. OPTIONS: Ways to make it work */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <RoommateMath
                   studioRent={liveFmr ? liveFmr.fmr[0] : metroData.fmr[0]}
                   oneBrRent={liveFmr ? liveFmr.fmr[1] : metroData.fmr[1]}
@@ -973,9 +973,9 @@ export default function HousingAffordability() {
               </div>
 
               {/* 4. SUPPORTING DATA: Affordability Analysis */}
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-white mb-6">Affordability Analysis</h2>
-                <div className="grid grid-cols-3 gap-6">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+                <h2 className="text-base md:text-lg font-semibold text-white mb-4 md:mb-6">Affordability Analysis</h2>
+                <div className="grid grid-cols-3 gap-2 md:gap-6">
                   <AffordabilityGauge
                     ratio={calculations.rentToIncomeRatio}
                     label="Rent Only"
@@ -1001,9 +1001,9 @@ export default function HousingAffordability() {
               </div>
 
               {/* 5. BUDGET DETAILS: Monthly Breakdown */}
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Monthly Budget Breakdown</h2>
-                <div className="flex flex-col md:flex-row md:items-center gap-8">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+                <h2 className="text-base md:text-lg font-semibold text-white mb-4">Monthly Budget Breakdown</h2>
+                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
                   <CostBreakdownChart 
                     rent={calculations.monthlyRent}
                     utilities={calculations.utilities}
@@ -1037,9 +1037,9 @@ export default function HousingAffordability() {
               </div>
 
               {/* Income Required */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Income Required</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-white mb-4">Income Required</h3>
                   <p className="text-slate-400 text-sm mb-4">
                     To afford the {formatCurrency(fmr)}/mo FMR in {selectedMetro}:
                   </p>
@@ -1056,9 +1056,9 @@ export default function HousingAffordability() {
                 </div>
 
                 {/* FMR by Bedroom */}
-                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">FMR by Unit Size</h3>
-                  <div className="h-48">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-white mb-4">FMR by Unit Size</h3>
+                  <div className="h-40 md:h-48">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={fmrComparisonData}>
                         <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -1088,9 +1088,9 @@ export default function HousingAffordability() {
               </div>
 
               {/* Rent vs Buy */}
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Rent vs Buy Calculator</h2>
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+                <h2 className="text-base md:text-lg font-semibold text-white mb-4">Rent vs Buy Calculator</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 md:mb-6">
                   <div>
                     <label className="block text-sm text-slate-400 mb-2">
                       Home Price: {formatCurrency(homePrice)}
@@ -1131,9 +1131,9 @@ export default function HousingAffordability() {
           </div>
 
           {/* Data Sources */}
-          <div className="mt-8 bg-slate-800/30 border border-slate-700/50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">Data Sources</h3>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
+          <div className="mt-6 md:mt-8 bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-white mb-3">Data Sources</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-slate-400 mb-1">Fair Market Rents</p>
                 <p className="text-slate-500">HUD FY 2025 FMR data</p>

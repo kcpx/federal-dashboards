@@ -57,11 +57,11 @@ const SummaryCard = ({ title, value, subtitle, change, color = 'blue', icon }) =
   }
 
   return (
-    <div className={`bg-gradient-to-br ${bgColors[color]} border rounded-xl p-5`}>
+    <div className={`bg-gradient-to-br ${bgColors[color]} border rounded-xl p-4 md:p-5`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-slate-400 text-sm mb-1">{title}</p>
-          <p className="text-3xl font-bold text-white">{value || '—'}</p>
+          <p className="text-slate-400 text-xs md:text-sm mb-1">{title}</p>
+          <p className="text-2xl md:text-3xl font-bold text-white">{value || '—'}</p>
           {subtitle && <p className="text-slate-500 text-xs mt-1">{subtitle}</p>}
           {change && (
             <p className={`text-sm mt-2 ${parseFloat(change) >= 0 ? 'text-red-400' : 'text-emerald-400'}`}>
@@ -80,9 +80,9 @@ const SummaryCard = ({ title, value, subtitle, change, color = 'blue', icon }) =
 }
 
 const ChartCard = ({ title, children, description }) => (
-  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-    <div className="mb-4">
-      <h3 className="text-lg font-semibold text-white">{title}</h3>
+  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+    <div className="mb-3 md:mb-4">
+      <h3 className="text-base md:text-lg font-semibold text-white">{title}</h3>
       {description && <p className="text-slate-500 text-sm mt-1">{description}</p>}
     </div>
     {children}
@@ -124,16 +124,16 @@ const InterestTicker = ({ annualInterest }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-xl p-6">
+    <div className="bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-xl p-4 md:p-6">
       <div className="flex justify-end mb-2">
         <DataTag isLive={true} />
       </div>
       <div className="text-center">
-        <p className="text-red-400 text-sm font-medium mb-2">Interest Paid Since You Opened This Page</p>
-        <p className="text-4xl md:text-5xl font-bold text-white font-mono tracking-tight">
+        <p className="text-red-400 text-xs md:text-sm font-medium mb-2">Interest Paid Since You Opened This Page</p>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-mono tracking-tight">
           {formatMoney(interestPaid)}
         </p>
-        <div className="mt-4 flex justify-center gap-6 text-sm">
+        <div className="mt-3 md:mt-4 flex justify-center gap-4 md:gap-6 text-xs md:text-sm">
           <div>
             <p className="text-slate-500">Per Second</p>
             <p className="text-red-400 font-semibold">{formatMoney(interestPerSecond)}</p>
@@ -160,21 +160,21 @@ const YourShareCard = ({ totalDebt }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-amber-900/20 to-orange-950/20 border border-amber-500/30 rounded-xl p-6">
+    <div className="bg-gradient-to-br from-amber-900/20 to-orange-950/20 border border-amber-500/30 rounded-xl p-4 md:p-6">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-amber-400 text-sm font-medium">Your Share of the National Debt</h3>
+        <h3 className="text-amber-400 text-xs md:text-sm font-medium">Your Share of the National Debt</h3>
         <DataTag isLive={true} />
       </div>
-      <p className="text-5xl font-bold text-white mb-2">{formatMoney(perCapita)}</p>
-      <p className="text-slate-400 text-sm mb-4">per U.S. citizen</p>
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700">
+      <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">{formatMoney(perCapita)}</p>
+      <p className="text-slate-400 text-xs md:text-sm mb-4">per U.S. citizen</p>
+      <div className="grid grid-cols-2 gap-3 md:gap-4 pt-4 border-t border-slate-700">
         <div>
           <p className="text-slate-500 text-xs">Family of 4</p>
-          <p className="text-amber-400 font-bold text-lg">{formatMoney(familyOf4)}</p>
+          <p className="text-amber-400 font-bold text-sm md:text-lg">{formatMoney(familyOf4)}</p>
         </div>
         <div>
           <p className="text-slate-500 text-xs">Per Household</p>
-          <p className="text-amber-400 font-bold text-lg">{formatMoney(perHousehold)}</p>
+          <p className="text-amber-400 font-bold text-sm md:text-lg">{formatMoney(perHousehold)}</p>
         </div>
       </div>
     </div>
@@ -234,12 +234,12 @@ const BirthYearCalculator = ({ currentDebt }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-950/20 border border-indigo-500/30 rounded-xl p-6">
+    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-950/20 border border-indigo-500/30 rounded-xl p-4 md:p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-indigo-400 text-sm font-medium">Debt in Your Lifetime</h3>
+        <h3 className="text-indigo-400 text-xs md:text-sm font-medium">Debt in Your Lifetime</h3>
         <DataTag label="Historical" lastUpdate="Dec 2025" />
       </div>
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-2 md:gap-3 mb-4">
         <input
           type="number"
           placeholder="Enter birth year"
@@ -283,9 +283,9 @@ const BirthYearCalculator = ({ currentDebt }) => {
 // Interest vs Defense Callout
 const InterestVsDefenseCallout = () => {
   return (
-    <div className="bg-gradient-to-r from-red-900/40 via-red-900/20 to-slate-900/40 border border-red-500/40 rounded-xl p-6">
-      <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+    <div className="bg-gradient-to-r from-red-900/40 via-red-900/20 to-slate-900/40 border border-red-500/40 rounded-xl p-4 md:p-6">
+      <div className="flex items-start gap-3 md:gap-4">
+        <div className="w-10 h-10 md:w-12 md:h-12 bg-red-500/20 rounded-full flex items-center justify-center flex-shrink-0">
           <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -298,20 +298,20 @@ const InterestVsDefenseCallout = () => {
             </div>
             <DataTag label="Annual" lastUpdate="FY 2024" />
           </div>
-          <h3 className="text-white text-lg font-semibold mb-2">
+          <h3 className="text-white text-base md:text-lg font-semibold mb-2">
             Interest Payments Now Exceed Defense Spending
           </h3>
-          <p className="text-slate-400 text-sm mb-4">
+          <p className="text-slate-400 text-xs md:text-sm mb-4">
             For the first time in American history, the federal government spent more on interest ($1.1T) than on national defense ($874B).
           </p>
-          <div className="flex gap-6">
+          <div className="flex gap-4 md:gap-6">
             <div>
-              <p className="text-red-400 text-2xl font-bold">$1.1T</p>
+              <p className="text-red-400 text-xl md:text-2xl font-bold">$1.1T</p>
               <p className="text-slate-500 text-xs">Interest</p>
             </div>
-            <div className="text-slate-600 text-2xl">&gt;</div>
+            <div className="text-slate-600 text-xl md:text-2xl">&gt;</div>
             <div>
-              <p className="text-slate-300 text-2xl font-bold">$874B</p>
+              <p className="text-slate-300 text-xl md:text-2xl font-bold">$874B</p>
               <p className="text-slate-500 text-xs">Defense</p>
             </div>
           </div>
@@ -333,9 +333,9 @@ const TaxDollarBreakdown = () => {
   ].sort((a, b) => b.amount - a.amount);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold text-white">Where Your Tax Dollar Goes</h3>
+        <h3 className="text-base md:text-lg font-semibold text-white">Where Your Tax Dollar Goes</h3>
         <DataTag label="Annual" lastUpdate="FY 2024" />
       </div>
       <p className="text-slate-500 text-sm mb-4">FY 2024 Federal Spending Breakdown</p>
@@ -424,32 +424,32 @@ const WhatInterestCouldBuy = ({ annualInterest }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">💸</span>
-          <h3 className="text-lg font-semibold text-white">What $1.1T Interest Could Buy</h3>
+          <span className="text-xl md:text-2xl">💸</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">What $1.1T Interest Could Buy</h3>
         </div>
         <DataTag label="Annual" lastUpdate="FY 2024" />
       </div>
-      <p className="text-slate-400 text-sm mb-4">
+      <p className="text-slate-400 text-xs md:text-sm mb-4">
         Every year, we pay $1.1 trillion in interest — money that buys nothing. Here's what it could fund instead:
       </p>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
         {alternatives.map((alt) => (
-          <div key={alt.label} className="bg-slate-800/50 rounded-lg p-3">
+          <div key={alt.label} className="bg-slate-800/50 rounded-lg p-2 md:p-3">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl">{alt.icon}</span>
-              <span className="text-slate-300 text-sm font-medium">{alt.label}</span>
+              <span className="text-lg md:text-xl">{alt.icon}</span>
+              <span className="text-slate-300 text-xs md:text-sm font-medium">{alt.label}</span>
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="text-amber-400 text-xl font-bold">
+              <span className="text-amber-400 text-lg md:text-xl font-bold">
                 {alt.isCurrency ? '$' : ''}{formatNumber(alt.count)}
               </span>
               <span className="text-slate-500 text-xs">{alt.unit}</span>
             </div>
-            <p className="text-slate-600 text-xs mt-1">{alt.description}</p>
+            <p className="text-slate-600 text-xs mt-1 hidden sm:block">{alt.description}</p>
           </div>
         ))}
       </div>
@@ -579,7 +579,7 @@ export default function TreasuryDashboard() {
         <meta name="description" content="U.S. Treasury debt monitoring - total debt, interest expense, and upcoming auctions" />
       </Head>
 
-      <main className="min-h-screen bg-slate-900 p-6">
+      <main className="min-h-screen bg-slate-900 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -620,7 +620,7 @@ export default function TreasuryDashboard() {
           {error && <ErrorBanner message={error} onRetry={fetchData} />}
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
             <SummaryCard
               title="Total Public Debt"
               value={data.summary.totalDebt.formatted}
@@ -679,22 +679,22 @@ export default function TreasuryDashboard() {
           </div>
 
           {/* Context: Interest Alert + Opportunity Cost (side by side) */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
             <InterestVsDefenseCallout />
             <WhatInterestCouldBuy annualInterest={data.summary.annualInterest?.value} />
           </div>
 
           {/* Personal History + Budget Context */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
             <BirthYearCalculator currentDebt={data.summary.totalDebt?.value} />
             <TaxDollarBreakdown />
           </div>
 
           {/* Charts Row 1 */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
             {/* Debt Over Time */}
             <ChartCard title="Total Debt Over Time" description="Daily debt to the penny ($ Trillions)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.debtHistory}>
                     <defs>
@@ -733,8 +733,8 @@ export default function TreasuryDashboard() {
 
             {/* Debt Composition */}
             <ChartCard title="Debt Holders" description="Public vs Intragovernmental holdings">
-              <div className="h-64 flex items-center">
-                <div className="w-1/2">
+              <div className="h-48 md:h-64 flex flex-col md:flex-row items-center">
+                <div className="w-full md:w-1/2">
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                       <Pie
@@ -758,7 +758,7 @@ export default function TreasuryDashboard() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="w-1/2 space-y-4">
+                <div className="w-full md:w-1/2 flex md:flex-col gap-4 md:space-y-4 justify-center mt-2 md:mt-0">
                   {data.debtByType.map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <div className="w-4 h-4 rounded-full" style={{ backgroundColor: i === 0 ? '#ef4444' : '#3b82f6' }}></div>
@@ -777,10 +777,10 @@ export default function TreasuryDashboard() {
           </div>
 
           {/* Charts Row 2 */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
             {/* Interest Rates by Security */}
             <ChartCard title="Average Interest Rates" description="By security type (%)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.interestRates.slice(0, 6)} layout="vertical">
                     <XAxis
@@ -811,7 +811,7 @@ export default function TreasuryDashboard() {
 
             {/* Recent Auctions */}
             <ChartCard title="Recent Treasury Auctions" description="Latest debt issuances">
-              <div className="h-64 overflow-auto">
+              <div className="h-48 md:h-64 overflow-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-slate-400 border-b border-slate-700">
@@ -843,9 +843,9 @@ export default function TreasuryDashboard() {
           </div>
 
           {/* Context Section */}
-          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 mb-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Why This Matters</h2>
-            <div className="grid md:grid-cols-3 gap-6 text-sm">
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6 mb-6">
+            <h2 className="text-base md:text-lg font-semibold text-white mb-4">Why This Matters</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-sm">
               <div>
                 <h3 className="text-slate-300 font-medium mb-2">Debt Sustainability</h3>
                 <p className="text-slate-500">
@@ -871,9 +871,9 @@ export default function TreasuryDashboard() {
           </div>
 
           {/* Data Sources Footer */}
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">Data Sources</h3>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-white mb-3">Data Sources</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-slate-400 mb-2">Treasury FiscalData API</p>
                 <code className="text-slate-500">api.fiscaldata.treasury.gov</code>

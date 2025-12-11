@@ -157,20 +157,20 @@ const InflationWallet = ({ cpiCurrent, cpiBaseline }) => {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-red-900/30 to-orange-900/20 border border-red-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-red-900/30 to-orange-900/20 border border-red-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">💸</span>
-          <h3 className="text-lg font-semibold text-white">Your Dollar's Purchasing Power</h3>
+          <span className="text-xl md:text-2xl">💸</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Your Dollar's Purchasing Power</h3>
         </div>
         <DataTag isLive={true} />
       </div>
 
-      <div className="text-center mb-6">
-        <p className="text-slate-400 text-sm mb-2">$100 in January 2020 now buys only...</p>
+      <div className="text-center mb-4 md:mb-6">
+        <p className="text-slate-400 text-xs md:text-sm mb-2">$100 in January 2020 now buys only...</p>
         <div className="flex items-center justify-center gap-2">
-          <span className="text-5xl font-bold text-white">${purchasingPower}</span>
-          <span className="text-slate-400 text-lg">worth</span>
+          <span className="text-4xl md:text-5xl font-bold text-white">${purchasingPower}</span>
+          <span className="text-slate-400 text-base md:text-lg">worth</span>
         </div>
         <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-red-500/20 rounded-full">
           <span className="text-red-400 font-semibold">-${lostValue}</span>
@@ -193,20 +193,20 @@ const InflationWallet = ({ cpiCurrent, cpiBaseline }) => {
       </div>
 
       {/* Price examples */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 md:gap-3">
         {items.map((item) => {
           const increase = (((item.now - item.then) / item.then) * 100).toFixed(0);
           return (
-            <div key={item.name} className="bg-slate-800/50 rounded-lg p-3">
+            <div key={item.name} className="bg-slate-800/50 rounded-lg p-2 md:p-3">
               <div className="flex items-center gap-2 mb-1">
-                <span>{item.icon}</span>
-                <span className="text-slate-300 text-sm">{item.name}</span>
+                <span className="text-sm md:text-base">{item.icon}</span>
+                <span className="text-slate-300 text-xs md:text-sm">{item.name}</span>
               </div>
-              <div className="flex items-baseline gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
                 <span className="text-slate-500 text-xs line-through">
                   ${item.then.toLocaleString()}{item.unit || ''}
                 </span>
-                <span className="text-white font-semibold">
+                <span className="text-white text-sm md:text-base font-semibold">
                   ${item.now.toLocaleString()}{item.unit || ''}
                 </span>
               </div>
@@ -244,16 +244,16 @@ const SalaryShrinking = ({ cpiCurrent, cpiBaseline }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">📉</span>
-          <h3 className="text-lg font-semibold text-white">Your Salary Is Shrinking</h3>
+          <span className="text-xl md:text-2xl">📉</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Your Salary Is Shrinking</h3>
         </div>
         <DataTag isLive={true} />
       </div>
 
-      <p className="text-slate-400 text-sm mb-4">
+      <p className="text-slate-400 text-xs md:text-sm mb-4">
         Even if your paycheck looks the same, inflation has eroded its value. Enter your 2020 salary:
       </p>
 
@@ -273,10 +273,10 @@ const SalaryShrinking = ({ cpiCurrent, cpiBaseline }) => {
       </div>
 
       {/* Result */}
-      <div className="bg-slate-800/50 rounded-lg p-4 mb-4">
-        <p className="text-slate-400 text-sm mb-2">To have the same purchasing power today, you'd need:</p>
-        <p className="text-3xl font-bold text-white mb-1">{formatCurrency(equivalentToday)}</p>
-        <p className="text-purple-400 text-sm">
+      <div className="bg-slate-800/50 rounded-lg p-3 md:p-4 mb-4">
+        <p className="text-slate-400 text-xs md:text-sm mb-2">To have the same purchasing power today, you'd need:</p>
+        <p className="text-2xl md:text-3xl font-bold text-white mb-1">{formatCurrency(equivalentToday)}</p>
+        <p className="text-purple-400 text-xs md:text-sm">
           That's <span className="font-semibold">+{formatCurrency(difference)}</span> more ({percentIncrease}% raise needed)
         </p>
       </div>
@@ -370,17 +370,17 @@ const RecessionTrafficLight = ({ indicators }) => {
   const current = statusColors[overallStatus];
 
   return (
-    <div className={`bg-slate-800/50 border ${current.border} rounded-xl p-6`}>
-      <div className="flex items-center justify-between mb-4">
+    <div className={`bg-slate-800/50 border ${current.border} rounded-xl p-4 md:p-6`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🚦</span>
-          <h3 className="text-lg font-semibold text-white">Recession Risk Monitor</h3>
+          <span className="text-xl md:text-2xl">🚦</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Recession Risk Monitor</h3>
         </div>
         <DataTag isLive={true} />
       </div>
 
       {/* Traffic Light */}
-      <div className="flex items-center gap-6 mb-6">
+      <div className="flex items-center gap-4 md:gap-6 mb-4 md:mb-6">
         <div className="flex flex-col gap-2">
           {['red', 'yellow', 'green'].map((color) => (
             <div
@@ -394,8 +394,8 @@ const RecessionTrafficLight = ({ indicators }) => {
           ))}
         </div>
         <div>
-          <p className={`text-2xl font-bold ${current.text}`}>{statusText}</p>
-          <p className="text-slate-400 text-sm mt-1">{statusDescription}</p>
+          <p className={`text-xl md:text-2xl font-bold ${current.text}`}>{statusText}</p>
+          <p className="text-slate-400 text-xs md:text-sm mt-1">{statusDescription}</p>
         </div>
       </div>
 
@@ -471,23 +471,23 @@ const ThenVsNow = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">📊</span>
-          <h3 className="text-lg font-semibold text-white">Then vs Now</h3>
+          <span className="text-xl md:text-2xl">📊</span>
+          <h3 className="text-base md:text-lg font-semibold text-white">Then vs Now</h3>
         </div>
         <DataTag label="Historical" lastUpdate="Dec 2024" />
       </div>
-      <p className="text-slate-400 text-sm mb-4">How economic realities have changed over 44 years</p>
+      <p className="text-slate-400 text-xs md:text-sm mb-4">How economic realities have changed over 44 years</p>
 
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         {comparisons.map((item) => (
-          <div key={item.metric} className="bg-slate-800/50 rounded-lg p-3">
+          <div key={item.metric} className="bg-slate-800/50 rounded-lg p-2 md:p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span>{item.icon}</span>
-                <span className="text-slate-300 text-sm font-medium">{item.metric}</span>
+                <span className="text-sm md:text-base">{item.icon}</span>
+                <span className="text-slate-300 text-xs md:text-sm font-medium">{item.metric}</span>
               </div>
               <span className={`text-xs px-2 py-0.5 rounded ${item.worse ? 'bg-red-500/20 text-red-400' : 'bg-slate-700 text-slate-400'}`}>
                 {item.multiplier}x
@@ -496,16 +496,16 @@ const ThenVsNow = () => {
             <div className="flex items-center justify-between">
               <div className="text-center">
                 <p className="text-slate-500 text-xs">{item.then.year}</p>
-                <p className="text-white font-semibold">{item.then.display}</p>
+                <p className="text-white text-sm md:text-base font-semibold">{item.then.display}</p>
               </div>
-              <div className="flex-1 mx-3">
+              <div className="flex-1 mx-2 md:mx-3">
                 <div className="h-1 bg-slate-700 rounded-full relative">
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-500">→</div>
                 </div>
               </div>
               <div className="text-center">
                 <p className="text-slate-500 text-xs">{item.now.year}</p>
-                <p className={`font-semibold ${item.worse ? 'text-red-400' : 'text-amber-400'}`}>{item.now.display}</p>
+                <p className={`text-sm md:text-base font-semibold ${item.worse ? 'text-red-400' : 'text-amber-400'}`}>{item.now.display}</p>
               </div>
             </div>
           </div>
@@ -536,11 +536,11 @@ const SummaryCard = ({ title, value, unit, change, color = 'blue' }) => {
   }
 
   return (
-    <div className={`bg-gradient-to-br ${bgColors[color]} border rounded-xl p-5`}>
-      <p className="text-slate-400 text-sm mb-1">{title}</p>
+    <div className={`bg-gradient-to-br ${bgColors[color]} border rounded-xl p-4 md:p-5`}>
+      <p className="text-slate-400 text-xs md:text-sm mb-1">{title}</p>
       <div className="flex items-baseline gap-2">
-        <span className="text-3xl font-bold text-white">{value}</span>
-        <span className="text-slate-400 text-lg">{unit}</span>
+        <span className="text-2xl md:text-3xl font-bold text-white">{value}</span>
+        <span className="text-slate-400 text-base md:text-lg">{unit}</span>
       </div>
       <div className={`text-sm mt-2 ${changeColor}`}>
         {isPositive ? '↑' : '↓'} {Math.abs(change).toFixed(2)} from prior
@@ -550,10 +550,10 @@ const SummaryCard = ({ title, value, unit, change, color = 'blue' }) => {
 }
 
 const ChartCard = ({ title, children, description }) => (
-  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-    <div className="flex justify-between items-start mb-4">
+  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
+    <div className="flex justify-between items-start mb-3 md:mb-4">
       <div>
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="text-base md:text-lg font-semibold text-white">{title}</h3>
         {description && <p className="text-slate-500 text-sm mt-1">{description}</p>}
       </div>
     </div>
@@ -663,7 +663,7 @@ export default function FredDashboard() {
         <meta name="description" content="Real-time economic indicators from FRED" />
       </Head>
 
-      <main className="min-h-screen bg-slate-900 p-6">
+      <main className="min-h-screen bg-slate-900 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -726,7 +726,7 @@ export default function FredDashboard() {
           {error && <ErrorBanner message={error} onRetry={fetchFredData} />}
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
             <SummaryCard
               title={data.summary.gdp.name}
               value={`$${data.summary.gdp.value}`}
@@ -763,7 +763,7 @@ export default function FredDashboard() {
           </div>
 
           {/* Personal Impact: Your Money Is Worth Less */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
             <InflationWallet cpiCurrent={data.cpiCurrent} cpiBaseline={data.cpiJan2020} />
             <SalaryShrinking cpiCurrent={data.cpiCurrent} cpiBaseline={data.cpiJan2020} />
           </div>
@@ -774,10 +774,10 @@ export default function FredDashboard() {
           </div>
 
           {/* Charts Grid */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             {/* GDP Growth */}
             <ChartCard title="Real GDP" description="Quarterly, seasonally adjusted annual rate ($ Trillions)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.gdpHistory}>
                     <defs>
@@ -797,7 +797,7 @@ export default function FredDashboard() {
 
             {/* Unemployment */}
             <ChartCard title="Unemployment Rate" description="Monthly, seasonally adjusted (%)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.unemploymentHistory}>
                     <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -812,7 +812,7 @@ export default function FredDashboard() {
 
             {/* Inflation (CPI vs PCE) */}
             <ChartCard title="Inflation: CPI vs PCE" description="Year-over-year change (%)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.inflationHistory}>
                     <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -838,7 +838,7 @@ export default function FredDashboard() {
 
             {/* Yield Curve */}
             <ChartCard title="Treasury Yield Curve" description="Current term structure of interest rates">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.yieldCurve}>
                     <defs>
@@ -858,7 +858,7 @@ export default function FredDashboard() {
 
             {/* 2Y-10Y Spread */}
             <ChartCard title="2Y-10Y Treasury Spread" description="Yield curve slope — negative = inversion (recession signal)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.yieldSpreadHistory}>
                     <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -883,7 +883,7 @@ export default function FredDashboard() {
 
             {/* Fed Funds Rate */}
             <ChartCard title="Federal Funds Rate" description="FOMC target rate (upper bound)">
-              <div className="h-64">
+              <div className="h-48 md:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.fedFundsHistory}>
                     <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -902,11 +902,11 @@ export default function FredDashboard() {
           </div>
 
           {/* Housing Section */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Housing Market</h2>
-            <div className="grid lg:grid-cols-2 gap-6">
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-lg md:text-xl font-bold text-white mb-4">Housing Market</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <ChartCard title="Housing Starts & Mortgage Rates" description="Monthly housing starts (M) vs 30Y fixed mortgage rate (%)">
-                <div className="h-64">
+                <div className="h-48 md:h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data.housingData}>
                       <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -932,22 +932,22 @@ export default function FredDashboard() {
 
               {/* Labor Market Summary */}
               <ChartCard title="Labor Market Snapshot" description="JOLTS and participation data">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-700/50 rounded-lg p-4">
-                    <p className="text-slate-400 text-sm">Job Openings (JOLTS)</p>
-                    <p className="text-2xl font-bold text-white">{data.laborMarket.jolts}M</p>
+                <div className="grid grid-cols-2 gap-2 md:gap-4">
+                  <div className="bg-slate-700/50 rounded-lg p-3 md:p-4">
+                    <p className="text-slate-400 text-xs md:text-sm">Job Openings (JOLTS)</p>
+                    <p className="text-xl md:text-2xl font-bold text-white">{data.laborMarket.jolts}M</p>
                   </div>
-                  <div className="bg-slate-700/50 rounded-lg p-4">
-                    <p className="text-slate-400 text-sm">Quits Rate</p>
-                    <p className="text-2xl font-bold text-white">{data.laborMarket.quits}%</p>
+                  <div className="bg-slate-700/50 rounded-lg p-3 md:p-4">
+                    <p className="text-slate-400 text-xs md:text-sm">Quits Rate</p>
+                    <p className="text-xl md:text-2xl font-bold text-white">{data.laborMarket.quits}%</p>
                   </div>
-                  <div className="bg-slate-700/50 rounded-lg p-4">
-                    <p className="text-slate-400 text-sm">Hires (monthly)</p>
-                    <p className="text-2xl font-bold text-white">{data.laborMarket.hires}M</p>
+                  <div className="bg-slate-700/50 rounded-lg p-3 md:p-4">
+                    <p className="text-slate-400 text-xs md:text-sm">Hires (monthly)</p>
+                    <p className="text-xl md:text-2xl font-bold text-white">{data.laborMarket.hires}M</p>
                   </div>
-                  <div className="bg-slate-700/50 rounded-lg p-4">
-                    <p className="text-slate-400 text-sm">Participation Rate</p>
-                    <p className="text-2xl font-bold text-white">{data.laborMarket.participation}%</p>
+                  <div className="bg-slate-700/50 rounded-lg p-3 md:p-4">
+                    <p className="text-slate-400 text-xs md:text-sm">Participation Rate</p>
+                    <p className="text-xl md:text-2xl font-bold text-white">{data.laborMarket.participation}%</p>
                   </div>
                 </div>
                 <div className="mt-4 p-3 rounded-lg bg-slate-700/50">
@@ -960,40 +960,40 @@ export default function FredDashboard() {
           </div>
 
           {/* Recession Indicators */}
-          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Recession Indicators</h2>
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className={`p-4 rounded-lg ${data.recessionIndicators.sahmRule < 0.5 ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
-                <p className="text-slate-400 text-sm mb-1">Sahm Rule</p>
-                <p className="text-2xl font-bold text-white">{data.recessionIndicators.sahmRule}</p>
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+            <h2 className="text-lg md:text-xl font-bold text-white mb-4">Recession Indicators</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <div className={`p-3 md:p-4 rounded-lg ${data.recessionIndicators.sahmRule < 0.5 ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+                <p className="text-slate-400 text-xs md:text-sm mb-1">Sahm Rule</p>
+                <p className="text-xl md:text-2xl font-bold text-white">{data.recessionIndicators.sahmRule}</p>
                 <p className={`text-sm ${data.recessionIndicators.sahmRule < 0.5 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {data.recessionIndicators.sahmRule < 0.5 ? '✓ Below 0.5 threshold' : '⚠ Above 0.5 threshold'}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-slate-700/50">
-                <p className="text-slate-400 text-sm mb-1">Leading Index (LEI)</p>
-                <p className="text-2xl font-bold text-white">{data.recessionIndicators.leadingIndex > 0 ? '+' : ''}{data.recessionIndicators.leadingIndex}%</p>
-                <p className="text-slate-400 text-sm">MoM change</p>
+              <div className="p-3 md:p-4 rounded-lg bg-slate-700/50">
+                <p className="text-slate-400 text-xs md:text-sm mb-1">Leading Index (LEI)</p>
+                <p className="text-xl md:text-2xl font-bold text-white">{data.recessionIndicators.leadingIndex > 0 ? '+' : ''}{data.recessionIndicators.leadingIndex}%</p>
+                <p className="text-slate-400 text-xs md:text-sm">MoM change</p>
               </div>
-              <div className={`p-4 rounded-lg ${!data.recessionIndicators.yieldInversion ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
-                <p className="text-slate-400 text-sm mb-1">Yield Curve</p>
-                <p className="text-2xl font-bold text-white">{data.recessionIndicators.yieldInversion ? 'Inverted' : 'Normal'}</p>
+              <div className={`p-3 md:p-4 rounded-lg ${!data.recessionIndicators.yieldInversion ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+                <p className="text-slate-400 text-xs md:text-sm mb-1">Yield Curve</p>
+                <p className="text-xl md:text-2xl font-bold text-white">{data.recessionIndicators.yieldInversion ? 'Inverted' : 'Normal'}</p>
                 <p className={`text-sm ${!data.recessionIndicators.yieldInversion ? 'text-emerald-400' : 'text-red-400'}`}>
                   {!data.recessionIndicators.yieldInversion ? '✓ Positive slope' : '⚠ Recession signal'}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-slate-700/50">
-                <p className="text-slate-400 text-sm mb-1">Unemployment Trend</p>
-                <p className="text-2xl font-bold text-white capitalize">{data.recessionIndicators.unemploymentTrend}</p>
-                <p className="text-slate-400 text-sm">3-month direction</p>
+              <div className="p-3 md:p-4 rounded-lg bg-slate-700/50">
+                <p className="text-slate-400 text-xs md:text-sm mb-1">Unemployment Trend</p>
+                <p className="text-xl md:text-2xl font-bold text-white capitalize">{data.recessionIndicators.unemploymentTrend}</p>
+                <p className="text-slate-400 text-xs md:text-sm">3-month direction</p>
               </div>
             </div>
           </div>
 
           {/* Data Sources Footer */}
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-3">Data Sources & Series IDs</h3>
-            <div className="grid md:grid-cols-4 gap-4 text-sm">
+          <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-white mb-3">Data Sources & Series IDs</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-sm">
               <div>
                 <p className="text-slate-400 mb-2">GDP & Growth</p>
                 <code className="text-slate-500">GDPC1, GDP</code>
