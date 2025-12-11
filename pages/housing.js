@@ -39,6 +39,205 @@ const formatCurrency = (num) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num)
 }
 
+// Verdict Badge Component - Clear affordability tier
+const VerdictBadge = ({ ratio }) => {
+  let verdict, description, bgColor, textColor, icon;
+
+  if (ratio <= 25) {
+    verdict = 'COMFORTABLE';
+    description = 'You can afford this comfortably with room for savings and emergencies.';
+    bgColor = 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/40';
+    textColor = 'text-emerald-400';
+    icon = '✓';
+  } else if (ratio <= 30) {
+    verdict = 'AFFORDABLE';
+    description = 'Within the recommended 30% threshold. Manageable but watch your budget.';
+    bgColor = 'from-lime-500/20 to-lime-600/10 border-lime-500/40';
+    textColor = 'text-lime-400';
+    icon = '✓';
+  } else if (ratio <= 40) {
+    verdict = 'TIGHT';
+    description = 'Above recommended limits. You may struggle to save or handle emergencies.';
+    bgColor = 'from-amber-500/20 to-amber-600/10 border-amber-500/40';
+    textColor = 'text-amber-400';
+    icon = '⚠';
+  } else {
+    verdict = 'UNAFFORDABLE';
+    description = 'Severely cost-burdened. Consider roommates, different location, or income increase.';
+    bgColor = 'from-red-500/20 to-red-600/10 border-red-500/40';
+    textColor = 'text-red-400';
+    icon = '✗';
+  }
+
+  return (
+    <div className={`bg-gradient-to-br ${bgColor} border rounded-xl p-6 text-center`}>
+      <div className={`text-4xl mb-2`}>{icon}</div>
+      <h3 className={`text-2xl font-bold ${textColor} mb-2`}>{verdict}</h3>
+      <p className="text-slate-400 text-sm">{description}</p>
+      <div className="mt-4 pt-4 border-t border-slate-700">
+        <p className="text-slate-500 text-xs">
+          {ratio.toFixed(0)}% of income on housing • Target: ≤30%
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Years to Save Down Payment Calculator
+const DownPaymentCalculator = ({ homePrice, monthlyIncome, monthlyRent }) => {
+  const downPayment20 = homePrice * 0.20;
+  const downPayment10 = homePrice * 0.10;
+  const downPayment5 = homePrice * 0.05;
+
+  // Assume saving 15% of income after rent
+  const monthlyAfterRent = monthlyIncome - monthlyRent;
+  const savingsRate = 0.5; // 50% of remaining income saved (aggressive)
+  const monthlySavings = Math.max(monthlyAfterRent * savingsRate, 0);
+
+  const yearsTo20 = monthlySavings > 0 ? (downPayment20 / (monthlySavings * 12)).toFixed(1) : '∞';
+  const yearsTo10 = monthlySavings > 0 ? (downPayment10 / (monthlySavings * 12)).toFixed(1) : '∞';
+  const yearsTo5 = monthlySavings > 0 ? (downPayment5 / (monthlySavings * 12)).toFixed(1) : '∞';
+
+  return (
+    <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">🎯</span>
+        <h3 className="text-lg font-semibold text-white">Years to Save Down Payment</h3>
+      </div>
+
+      <p className="text-slate-400 text-sm mb-4">
+        Based on saving {formatCurrency(monthlySavings)}/mo (50% of post-rent income)
+      </p>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+          <div>
+            <p className="text-slate-300 font-medium">20% Down (No PMI)</p>
+            <p className="text-slate-500 text-sm">{formatCurrency(downPayment20)}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-purple-400 text-2xl font-bold">{yearsTo20}</p>
+            <p className="text-slate-500 text-xs">years</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+          <div>
+            <p className="text-slate-300 font-medium">10% Down</p>
+            <p className="text-slate-500 text-sm">{formatCurrency(downPayment10)}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-indigo-400 text-2xl font-bold">{yearsTo10}</p>
+            <p className="text-slate-500 text-xs">years</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+          <div>
+            <p className="text-slate-300 font-medium">5% Down (FHA)</p>
+            <p className="text-slate-500 text-sm">{formatCurrency(downPayment5)}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-blue-400 text-2xl font-bold">{yearsTo5}</p>
+            <p className="text-slate-500 text-xs">years</p>
+          </div>
+        </div>
+      </div>
+
+      <p className="text-slate-500 text-xs mt-4">
+        For a {formatCurrency(homePrice)} home. Assumes rent stays constant (it won't).
+      </p>
+    </div>
+  );
+};
+
+// Roommate Math Component
+const RoommateMath = ({ studioRent, oneBrRent, twoBrRent, threeBrRent }) => {
+  const scenarios = [
+    {
+      label: 'Living Alone (Studio)',
+      people: 1,
+      rent: studioRent,
+      perPerson: studioRent,
+      icon: '🧑'
+    },
+    {
+      label: 'Living Alone (1BR)',
+      people: 1,
+      rent: oneBrRent,
+      perPerson: oneBrRent,
+      icon: '🧑'
+    },
+    {
+      label: '2BR with Roommate',
+      people: 2,
+      rent: twoBrRent,
+      perPerson: twoBrRent / 2,
+      icon: '👥'
+    },
+    {
+      label: '3BR with 2 Roommates',
+      people: 3,
+      rent: threeBrRent,
+      perPerson: threeBrRent / 3,
+      icon: '👥👤'
+    },
+  ];
+
+  const baseline = studioRent;
+
+  return (
+    <div className="bg-gradient-to-br from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-xl p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">🏠</span>
+        <h3 className="text-lg font-semibold text-white">Roommate Math</h3>
+      </div>
+
+      <p className="text-slate-400 text-sm mb-4">
+        See how much you save by sharing housing costs
+      </p>
+
+      <div className="space-y-3">
+        {scenarios.map((s, i) => {
+          const savings = baseline - s.perPerson;
+          const savingsPercent = ((savings / baseline) * 100).toFixed(0);
+          const isBaseline = i === 0;
+
+          return (
+            <div key={s.label} className={`bg-slate-800/50 rounded-lg p-3 ${isBaseline ? 'border border-slate-600' : ''}`}>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <span>{s.icon}</span>
+                  <span className="text-slate-300 text-sm">{s.label}</span>
+                </div>
+                <span className="text-white font-semibold">{formatCurrency(s.perPerson)}/mo</span>
+              </div>
+              {!isBaseline && savings > 0 && (
+                <div className="flex justify-end">
+                  <span className="text-emerald-400 text-sm">
+                    Save {formatCurrency(savings)}/mo ({savingsPercent}%)
+                  </span>
+                </div>
+              )}
+              {isBaseline && (
+                <div className="flex justify-end">
+                  <span className="text-slate-500 text-xs">Baseline</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 p-3 bg-emerald-500/10 rounded-lg">
+        <p className="text-emerald-400 text-sm font-medium">
+          3BR split 3 ways saves {formatCurrency((baseline - threeBrRent/3) * 12)}/year vs studio
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const AffordabilityGauge = ({ ratio, label }) => {
   const getColor = (r) => {
     if (r <= 25) return '#10b981' // Green
@@ -532,24 +731,27 @@ export default function HousingAffordability() {
 
             {/* Results Panel */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Verdict Badge - Clear Answer */}
+              <VerdictBadge ratio={calculations.rentToIncomeRatio} />
+
               {/* Affordability Gauges */}
               <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-white mb-6">Affordability Analysis</h2>
                 <div className="grid grid-cols-3 gap-6">
-                  <AffordabilityGauge 
-                    ratio={calculations.rentToIncomeRatio} 
+                  <AffordabilityGauge
+                    ratio={calculations.rentToIncomeRatio}
                     label="Rent Only"
                   />
-                  <AffordabilityGauge 
-                    ratio={calculations.housingToIncomeRatio} 
+                  <AffordabilityGauge
+                    ratio={calculations.housingToIncomeRatio}
                     label="Total Housing"
                   />
-                  <AffordabilityGauge 
-                    ratio={calculations.medianRentRatio} 
+                  <AffordabilityGauge
+                    ratio={calculations.medianRentRatio}
                     label="vs Area Median"
                   />
                 </div>
-                
+
                 <div className="mt-6 p-4 rounded-lg bg-slate-700/50">
                   <p className="text-slate-300 text-sm">
                     <strong>HUD Standard:</strong> Housing is considered affordable when it costs no more than 30% of household income.
@@ -558,6 +760,21 @@ export default function HousingAffordability() {
                     </span> rent-to-income.
                   </p>
                 </div>
+              </div>
+
+              {/* New Feature Cards */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <DownPaymentCalculator
+                  homePrice={homePrice}
+                  monthlyIncome={calculations.monthlyIncome}
+                  monthlyRent={calculations.monthlyRent}
+                />
+                <RoommateMath
+                  studioRent={liveFmr ? liveFmr.fmr[0] : metroData.fmr[0]}
+                  oneBrRent={liveFmr ? liveFmr.fmr[1] : metroData.fmr[1]}
+                  twoBrRent={liveFmr ? liveFmr.fmr[2] : metroData.fmr[2]}
+                  threeBrRent={liveFmr ? liveFmr.fmr[3] : metroData.fmr[3]}
+                />
               </div>
 
               {/* Monthly Budget Breakdown */}
