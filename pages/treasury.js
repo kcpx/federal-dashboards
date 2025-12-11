@@ -1,9 +1,34 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
+
+// US Population (2024 estimate)
+const US_POPULATION = 335_000_000;
+const AVG_HOUSEHOLD_SIZE = 2.5;
+
+// Historical debt data for birth year calculator
+const HISTORICAL_DEBT = {
+  1950: 257e9, 1955: 274e9, 1960: 290e9, 1965: 322e9, 1970: 380e9,
+  1975: 541e9, 1980: 908e9, 1985: 1.82e12, 1990: 3.23e12, 1995: 4.97e12,
+  2000: 5.67e12, 2005: 7.93e12, 2010: 13.56e12, 2015: 18.15e12,
+  2020: 27.75e12, 2021: 29.62e12, 2022: 31.42e12, 2023: 34.00e12,
+  2024: 36.00e12, 2025: 36.40e12
+};
+
+// Federal budget data for tax dollar breakdown (FY2024 estimates in billions)
+const BUDGET_DATA = {
+  socialSecurity: 1460,
+  medicare: 870,
+  medicaid: 616,
+  interest: 1100,
+  defense: 874,
+  other: 1580
+};
+
+const BUDGET_TOTAL = Object.values(BUDGET_DATA).reduce((a, b) => a + b, 0);
 
 const SummaryCard = ({ title, value, subtitle, change, color = 'blue', icon }) => {
   const bgColors = {
@@ -62,6 +87,251 @@ const CustomTooltip = ({ active, payload, label }) => {
   }
   return null
 }
+
+// Live Interest Ticker Component
+const InterestTicker = ({ annualInterest }) => {
+  const [interestPaid, setInterestPaid] = useState(0);
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+  const interestPerSecond = annualInterest ? annualInterest / (365 * 24 * 60 * 60) : 35000;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSecondsElapsed(s => s + 1);
+      setInterestPaid(p => p + interestPerSecond);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [interestPerSecond]);
+
+  const formatMoney = (num) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-xl p-6">
+      <div className="text-center">
+        <p className="text-red-400 text-sm font-medium mb-2">Interest Paid Since You Opened This Page</p>
+        <p className="text-4xl md:text-5xl font-bold text-white font-mono tracking-tight">
+          {formatMoney(interestPaid)}
+        </p>
+        <div className="mt-4 flex justify-center gap-6 text-sm">
+          <div>
+            <p className="text-slate-500">Per Second</p>
+            <p className="text-red-400 font-semibold">{formatMoney(interestPerSecond)}</p>
+          </div>
+          <div>
+            <p className="text-slate-500">Time on Page</p>
+            <p className="text-slate-300 font-semibold">{secondsElapsed}s</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Your Share Component
+const YourShareCard = ({ totalDebt }) => {
+  const debtValue = totalDebt || 36.4e12;
+  const perCapita = debtValue / US_POPULATION;
+  const perHousehold = perCapita * AVG_HOUSEHOLD_SIZE;
+  const familyOf4 = perCapita * 4;
+
+  const formatMoney = (num) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-amber-900/20 to-orange-950/20 border border-amber-500/30 rounded-xl p-6">
+      <h3 className="text-amber-400 text-sm font-medium mb-3">Your Share of the National Debt</h3>
+      <p className="text-5xl font-bold text-white mb-2">{formatMoney(perCapita)}</p>
+      <p className="text-slate-400 text-sm mb-4">per U.S. citizen</p>
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700">
+        <div>
+          <p className="text-slate-500 text-xs">Family of 4</p>
+          <p className="text-amber-400 font-bold text-lg">{formatMoney(familyOf4)}</p>
+        </div>
+        <div>
+          <p className="text-slate-500 text-xs">Per Household</p>
+          <p className="text-amber-400 font-bold text-lg">{formatMoney(perHousehold)}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Birth Year Calculator Component
+const BirthYearCalculator = ({ currentDebt }) => {
+  const [birthYear, setBirthYear] = useState('');
+  const [result, setResult] = useState(null);
+
+  const calculate = () => {
+    const year = parseInt(birthYear);
+    if (year < 1950 || year > 2025) {
+      setResult(null);
+      return;
+    }
+
+    // Find closest historical year
+    const years = Object.keys(HISTORICAL_DEBT).map(Number).sort((a, b) => a - b);
+    let birthDebt = HISTORICAL_DEBT[year];
+    if (!birthDebt) {
+      // Interpolate
+      const lower = years.filter(y => y <= year).pop() || years[0];
+      const upper = years.filter(y => y >= year)[0] || years[years.length - 1];
+      if (lower === upper) {
+        birthDebt = HISTORICAL_DEBT[lower];
+      } else {
+        const ratio = (year - lower) / (upper - lower);
+        birthDebt = HISTORICAL_DEBT[lower] + ratio * (HISTORICAL_DEBT[upper] - HISTORICAL_DEBT[lower]);
+      }
+    }
+
+    const debtNow = currentDebt || 36.4e12;
+    const percentIncrease = ((debtNow - birthDebt) / birthDebt) * 100;
+    const birthPerCapita = birthDebt / 200_000_000; // Rough historical population
+    const nowPerCapita = debtNow / US_POPULATION;
+
+    setResult({
+      birthDebt,
+      debtNow,
+      percentIncrease,
+      birthPerCapita,
+      nowPerCapita,
+      birthYear: year
+    });
+  };
+
+  const formatTrillions = (num) => {
+    if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`;
+    if (num >= 1e9) return `$${(num / 1e9).toFixed(0)}B`;
+    return `$${(num / 1e6).toFixed(0)}M`;
+  };
+
+  const formatMoney = (num) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-950/20 border border-indigo-500/30 rounded-xl p-6">
+      <h3 className="text-indigo-400 text-sm font-medium mb-4">Debt in Your Lifetime</h3>
+      <div className="flex gap-3 mb-4">
+        <input
+          type="number"
+          placeholder="Enter birth year"
+          value={birthYear}
+          onChange={(e) => setBirthYear(e.target.value)}
+          className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+          min="1950"
+          max="2025"
+        />
+        <button
+          onClick={calculate}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+        >
+          Calculate
+        </button>
+      </div>
+
+      {result && (
+        <div className="space-y-3 pt-4 border-t border-slate-700">
+          <div className="flex justify-between">
+            <span className="text-slate-400">When you were born ({result.birthYear})</span>
+            <span className="text-white font-semibold">{formatTrillions(result.birthDebt)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-400">Today</span>
+            <span className="text-white font-semibold">{formatTrillions(result.debtNow)}</span>
+          </div>
+          <div className="bg-red-500/10 rounded-lg p-3 mt-3">
+            <p className="text-red-400 text-2xl font-bold">+{result.percentIncrease.toFixed(0)}%</p>
+            <p className="text-slate-400 text-sm">increase in your lifetime</p>
+          </div>
+          <div className="text-xs text-slate-500 mt-2">
+            Your share grew from {formatMoney(result.birthPerCapita)} to {formatMoney(result.nowPerCapita)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Interest vs Defense Callout
+const InterestVsDefenseCallout = () => {
+  return (
+    <div className="bg-gradient-to-r from-red-900/40 via-red-900/20 to-slate-900/40 border border-red-500/40 rounded-xl p-6">
+      <div className="flex items-start gap-4">
+        <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs font-medium">HISTORIC</span>
+            <span className="text-slate-500 text-xs">FY 2024</span>
+          </div>
+          <h3 className="text-white text-lg font-semibold mb-2">
+            Interest Payments Now Exceed Defense Spending
+          </h3>
+          <p className="text-slate-400 text-sm mb-4">
+            For the first time in American history, the federal government spent more on interest ($1.1T) than on national defense ($874B).
+          </p>
+          <div className="flex gap-6">
+            <div>
+              <p className="text-red-400 text-2xl font-bold">$1.1T</p>
+              <p className="text-slate-500 text-xs">Interest</p>
+            </div>
+            <div className="text-slate-600 text-2xl">&gt;</div>
+            <div>
+              <p className="text-slate-300 text-2xl font-bold">$874B</p>
+              <p className="text-slate-500 text-xs">Defense</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Tax Dollar Breakdown Component
+const TaxDollarBreakdown = () => {
+  const items = [
+    { name: 'Social Security', amount: BUDGET_DATA.socialSecurity, color: '#3b82f6' },
+    { name: 'Medicare', amount: BUDGET_DATA.medicare, color: '#10b981' },
+    { name: 'Interest', amount: BUDGET_DATA.interest, color: '#ef4444', highlight: true },
+    { name: 'Defense', amount: BUDGET_DATA.defense, color: '#8b5cf6' },
+    { name: 'Medicaid', amount: BUDGET_DATA.medicaid, color: '#f59e0b' },
+    { name: 'Other', amount: BUDGET_DATA.other, color: '#64748b' },
+  ].sort((a, b) => b.amount - a.amount);
+
+  return (
+    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-white mb-2">Where Your Tax Dollar Goes</h3>
+      <p className="text-slate-500 text-sm mb-4">FY 2024 Federal Spending Breakdown</p>
+      <div className="space-y-3">
+        {items.map((item) => {
+          const percent = (item.amount / BUDGET_TOTAL) * 100;
+          const cents = Math.round(percent);
+          return (
+            <div key={item.name}>
+              <div className="flex justify-between text-sm mb-1">
+                <span className={item.highlight ? 'text-red-400 font-medium' : 'text-slate-300'}>
+                  {item.name} {item.highlight && <span className="text-xs">(Growing fastest)</span>}
+                </span>
+                <span className="text-slate-400">{cents}¢</span>
+              </div>
+              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${percent}%`, backgroundColor: item.color }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 // Demo data for fallback
 const DEMO_DATA = {
@@ -225,6 +495,23 @@ export default function TreasuryDashboard() {
                 </svg>
               }
             />
+          </div>
+
+          {/* Interest vs Defense Alert */}
+          <div className="mb-6">
+            <InterestVsDefenseCallout />
+          </div>
+
+          {/* Live Interest Ticker */}
+          <div className="mb-6">
+            <InterestTicker annualInterest={data.summary.annualInterest?.value} />
+          </div>
+
+          {/* Personal Impact Section */}
+          <div className="grid lg:grid-cols-3 gap-6 mb-6">
+            <YourShareCard totalDebt={data.summary.totalDebt?.value} />
+            <BirthYearCalculator currentDebt={data.summary.totalDebt?.value} />
+            <TaxDollarBreakdown />
           </div>
 
           {/* Charts Row 1 */}
