@@ -271,6 +271,105 @@ const RecessionTrafficLight = ({ indicators }) => {
   );
 };
 
+// Then vs Now Component - Generational comparison
+const ThenVsNow = () => {
+  // Data comparing 1980 vs 2024 (inflation-adjusted where noted)
+  const comparisons = [
+    {
+      metric: 'Median Home Price',
+      then: { year: 1980, value: 47200, display: '$47,200' },
+      now: { year: 2024, value: 420000, display: '$420,000' },
+      multiplier: 8.9,
+      icon: '🏠'
+    },
+    {
+      metric: 'Median Household Income',
+      then: { year: 1980, value: 21000, display: '$21,000' },
+      now: { year: 2024, value: 80000, display: '$80,000' },
+      multiplier: 3.8,
+      icon: '💰'
+    },
+    {
+      metric: 'Years of Income to Buy Home',
+      then: { year: 1980, value: 2.2, display: '2.2 years' },
+      now: { year: 2024, value: 5.3, display: '5.3 years' },
+      multiplier: 2.4,
+      icon: '⏳',
+      worse: true
+    },
+    {
+      metric: 'Public College (Annual)',
+      then: { year: 1980, value: 800, display: '$800' },
+      now: { year: 2024, value: 11000, display: '$11,000' },
+      multiplier: 13.8,
+      icon: '🎓'
+    },
+    {
+      metric: 'Min Wage (Hourly)',
+      then: { year: 1980, value: 3.10, display: '$3.10' },
+      now: { year: 2024, value: 7.25, display: '$7.25' },
+      multiplier: 2.3,
+      icon: '⏰'
+    },
+    {
+      metric: 'Hours at Min Wage for Rent',
+      then: { year: 1980, value: 52, display: '52 hrs/mo' },
+      now: { year: 2024, value: 96, display: '96 hrs/mo' },
+      multiplier: 1.8,
+      icon: '🔨',
+      worse: true
+    },
+  ];
+
+  return (
+    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">📊</span>
+        <h3 className="text-lg font-semibold text-white">Then vs Now</h3>
+      </div>
+      <p className="text-slate-400 text-sm mb-4">How economic realities have changed over 44 years</p>
+
+      <div className="space-y-3">
+        {comparisons.map((item) => (
+          <div key={item.metric} className="bg-slate-800/50 rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span>{item.icon}</span>
+                <span className="text-slate-300 text-sm font-medium">{item.metric}</span>
+              </div>
+              <span className={`text-xs px-2 py-0.5 rounded ${item.worse ? 'bg-red-500/20 text-red-400' : 'bg-slate-700 text-slate-400'}`}>
+                {item.multiplier}x
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-center">
+                <p className="text-slate-500 text-xs">{item.then.year}</p>
+                <p className="text-white font-semibold">{item.then.display}</p>
+              </div>
+              <div className="flex-1 mx-3">
+                <div className="h-1 bg-slate-700 rounded-full relative">
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-500">→</div>
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-slate-500 text-xs">{item.now.year}</p>
+                <p className={`font-semibold ${item.worse ? 'text-red-400' : 'text-amber-400'}`}>{item.now.display}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
+        <p className="text-slate-400 text-xs">
+          <strong className="text-slate-300">Key insight:</strong> While incomes grew 3.8x, home prices grew 8.9x and college costs grew 13.8x.
+          The math no longer works the same way it did for previous generations.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const SummaryCard = ({ title, value, unit, change, color = 'blue' }) => {
   const isPositive = change >= 0
   const changeColor = title.includes('Unemployment') || title.includes('Inflation') 
@@ -501,9 +600,14 @@ export default function FredDashboard() {
           </div>
 
           {/* Personal Impact Section */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
             <InflationWallet />
             <RecessionTrafficLight indicators={data.recessionIndicators} />
+          </div>
+
+          {/* Then vs Now - Full Width */}
+          <div className="mb-8">
+            <ThenVsNow />
           </div>
 
           {/* Charts Grid */}
