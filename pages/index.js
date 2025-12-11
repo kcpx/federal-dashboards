@@ -60,7 +60,7 @@ export default function Home() {
           </Link>
 
           {/* Dashboard Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-16">
             {/* FRED Dashboard Card */}
             <Link href="/fred" className="group">
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl md:rounded-2xl p-4 md:p-6 card-hover h-full">
@@ -128,7 +128,7 @@ export default function Home() {
             </Link>
 
             {/* Housing Affordability Card */}
-            <Link href="/housing" className="group sm:col-span-2 md:col-span-1">
+            <Link href="/housing" className="group">
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl md:rounded-2xl p-4 md:p-6 card-hover h-full">
                 <div className="flex items-center gap-3 mb-3 md:mb-4">
                   <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
@@ -159,12 +159,48 @@ export default function Home() {
                 </div>
               </div>
             </Link>
+
+            {/* Cost of Living Card */}
+            <Link href="/prices" className="group">
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl md:rounded-2xl p-4 md:p-6 card-hover h-full">
+                <div className="flex items-center gap-3 mb-3 md:mb-4">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 md:w-6 md:h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg md:text-xl font-bold text-white">Cost of Living</h2>
+                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs font-medium">NEW</span>
+                  </div>
+                </div>
+
+                <p className="text-slate-400 text-xs md:text-sm mb-3 md:mb-4">
+                  Real grocery and gas prices. See what eggs, milk, bread, and fuel actually cost.
+                </p>
+
+                <div className="flex flex-wrap gap-1.5 mb-3 md:mb-4">
+                  {['Eggs', 'Milk', 'Gas', 'YoY Change'].map(tag => (
+                    <span key={tag} className="px-2 py-0.5 bg-slate-700/50 text-slate-300 rounded-full text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center text-amber-400 text-xs md:text-sm font-medium group-hover:translate-x-2 transition-transform">
+                  View Prices
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
           </div>
 
           {/* Data Sources */}
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6">
             <h3 className="text-base md:text-lg font-semibold text-white mb-4">Data Sources</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
               <div>
                 <h4 className="text-slate-300 font-medium mb-2">FRED API</h4>
                 <p className="text-slate-500">Federal Reserve Bank of St. Louis — economic time series</p>
@@ -178,8 +214,12 @@ export default function Home() {
                 <p className="text-slate-500">Fair Market Rents and Income Limits</p>
               </div>
               <div>
-                <h4 className="text-slate-300 font-medium mb-2">Census ACS</h4>
-                <p className="text-slate-500">Median household income</p>
+                <h4 className="text-slate-300 font-medium mb-2">BLS</h4>
+                <p className="text-slate-500">Consumer prices for food and goods</p>
+              </div>
+              <div>
+                <h4 className="text-slate-300 font-medium mb-2">EIA</h4>
+                <p className="text-slate-500">Gas and diesel fuel prices</p>
               </div>
               <div>
                 <h4 className="text-slate-300 font-medium mb-2">Claude AI</h4>
