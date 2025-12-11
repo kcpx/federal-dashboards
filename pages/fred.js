@@ -81,6 +81,84 @@ const DEMO_DATA = {
   }
 }
 
+// Inflation Wallet Component - Shows purchasing power loss
+const InflationWallet = ({ cpiData }) => {
+  // CPI values for calculations (approximate)
+  const CPI_2020 = 258.8; // Jan 2020
+  const CPI_NOW = cpiData?.currentCPI || 314.5; // Current CPI (approx Dec 2025)
+
+  const purchasingPower = (100 * CPI_2020 / CPI_NOW).toFixed(0);
+  const lostValue = 100 - purchasingPower;
+  const percentLost = ((1 - CPI_2020 / CPI_NOW) * 100).toFixed(1);
+
+  // Common items price increases (approximate since 2020)
+  const items = [
+    { name: 'Groceries', then: 100, now: 125, icon: '🛒' },
+    { name: 'Gas', then: 2.25, now: 3.20, icon: '⛽', unit: '/gal' },
+    { name: 'Rent', then: 1200, now: 1550, icon: '🏠', unit: '/mo' },
+    { name: 'Used Car', then: 22000, now: 28500, icon: '🚗' },
+  ];
+
+  return (
+    <div className="bg-gradient-to-br from-red-900/30 to-orange-900/20 border border-red-500/30 rounded-xl p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">💸</span>
+        <h3 className="text-lg font-semibold text-white">Your Dollar's Purchasing Power</h3>
+      </div>
+
+      <div className="text-center mb-6">
+        <p className="text-slate-400 text-sm mb-2">$100 in January 2020 now buys only...</p>
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-5xl font-bold text-white">${purchasingPower}</span>
+          <span className="text-slate-400 text-lg">worth</span>
+        </div>
+        <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-red-500/20 rounded-full">
+          <span className="text-red-400 font-semibold">-${lostValue}</span>
+          <span className="text-slate-400 text-sm">({percentLost}% gone)</span>
+        </div>
+      </div>
+
+      {/* Visual bar showing loss */}
+      <div className="mb-6">
+        <div className="flex justify-between text-xs text-slate-500 mb-1">
+          <span>2020: $100</span>
+          <span>2025: ${purchasingPower}</span>
+        </div>
+        <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-500 to-red-500 rounded-full transition-all duration-1000"
+            style={{ width: `${purchasingPower}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Price examples */}
+      <div className="grid grid-cols-2 gap-3">
+        {items.map((item) => {
+          const increase = (((item.now - item.then) / item.then) * 100).toFixed(0);
+          return (
+            <div key={item.name} className="bg-slate-800/50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span>{item.icon}</span>
+                <span className="text-slate-300 text-sm">{item.name}</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-slate-500 text-xs line-through">
+                  ${item.then.toLocaleString()}{item.unit || ''}
+                </span>
+                <span className="text-white font-semibold">
+                  ${item.now.toLocaleString()}{item.unit || ''}
+                </span>
+              </div>
+              <span className="text-red-400 text-xs">+{increase}%</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const SummaryCard = ({ title, value, unit, change, color = 'blue' }) => {
   const isPositive = change >= 0
   const changeColor = title.includes('Unemployment') || title.includes('Inflation') 
@@ -280,34 +358,39 @@ export default function FredDashboard() {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <SummaryCard 
+            <SummaryCard
               title={data.summary.gdp.name}
               value={`$${data.summary.gdp.value}`}
               unit="T"
               change={data.summary.gdp.change}
               color="blue"
             />
-            <SummaryCard 
+            <SummaryCard
               title={data.summary.unemployment.name}
               value={data.summary.unemployment.value}
               unit="%"
               change={data.summary.unemployment.change}
               color="green"
             />
-            <SummaryCard 
+            <SummaryCard
               title={data.summary.inflation.name}
               value={data.summary.inflation.value}
               unit="%"
               change={data.summary.inflation.change}
               color="yellow"
             />
-            <SummaryCard 
+            <SummaryCard
               title={data.summary.fedFunds.name}
               value={data.summary.fedFunds.value}
               unit="%"
               change={data.summary.fedFunds.change}
               color="purple"
             />
+          </div>
+
+          {/* Personal Impact Section */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+            <InflationWallet />
           </div>
 
           {/* Charts Grid */}
