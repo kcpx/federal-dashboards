@@ -78,14 +78,17 @@ const DEMO_DATA = {
     leadingIndex: 0.2, // Conference Board LEI
     yieldInversion: false,
     unemploymentTrend: 'stable',
-  }
+  },
+  // CPI data for Inflation Wallet (fallback values)
+  cpiCurrent: 314.5,  // Approximate Dec 2025
+  cpiJan2020: 257.971, // Fixed baseline
 }
 
 // Inflation Wallet Component - Shows purchasing power loss
-const InflationWallet = ({ cpiData }) => {
-  // CPI values for calculations (approximate)
-  const CPI_2020 = 258.8; // Jan 2020
-  const CPI_NOW = cpiData?.currentCPI || 314.5; // Current CPI (approx Dec 2025)
+const InflationWallet = ({ cpiCurrent, cpiBaseline }) => {
+  // CPI values - baseline is fixed Jan 2020, current is live from FRED
+  const CPI_2020 = cpiBaseline || 257.971; // Jan 2020 fixed
+  const CPI_NOW = cpiCurrent || 314.5; // Current CPI from FRED API
 
   const purchasingPower = (100 * CPI_2020 / CPI_NOW).toFixed(0);
   const lostValue = 100 - purchasingPower;
@@ -485,7 +488,10 @@ export default function FredDashboard() {
             leadingIndex: prev.recessionIndicators.leadingIndex, // Not available from FRED directly
             yieldInversion: liveData.recessionIndicators.yieldInversion ?? prev.recessionIndicators.yieldInversion,
             unemploymentTrend: liveData.recessionIndicators.unemploymentTrend || prev.recessionIndicators.unemploymentTrend,
-          }
+          },
+          // CPI data for Inflation Wallet
+          cpiCurrent: liveData.cpiCurrent || prev.cpiCurrent,
+          cpiJan2020: liveData.cpiJan2020 || prev.cpiJan2020,
         }))
         setLastUpdated(new Date(liveData.timestamp))
         setError(null)
@@ -601,7 +607,7 @@ export default function FredDashboard() {
 
           {/* Personal Impact Section */}
           <div className="grid lg:grid-cols-2 gap-6 mb-6">
-            <InflationWallet />
+            <InflationWallet cpiCurrent={data.cpiCurrent} cpiBaseline={data.cpiJan2020} />
             <RecessionTrafficLight indicators={data.recessionIndicators} />
           </div>
 
