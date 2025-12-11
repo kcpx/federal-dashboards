@@ -159,6 +159,118 @@ const InflationWallet = ({ cpiData }) => {
   );
 };
 
+// Recession Traffic Light Component
+const RecessionTrafficLight = ({ indicators }) => {
+  // Calculate overall status based on indicators
+  const sahmRule = indicators?.sahmRule || 0.37;
+  const yieldInversion = indicators?.yieldInversion || false;
+  const unemploymentTrend = indicators?.unemploymentTrend || 'stable';
+
+  // Score: 0 = green, 1-2 = yellow, 3+ = red
+  let score = 0;
+  const signals = [];
+
+  // Sahm Rule (most reliable)
+  if (sahmRule >= 0.5) {
+    score += 2;
+    signals.push({ name: 'Sahm Rule', status: 'red', detail: `${sahmRule.toFixed(2)} (≥0.5 = recession)` });
+  } else if (sahmRule >= 0.3) {
+    score += 1;
+    signals.push({ name: 'Sahm Rule', status: 'yellow', detail: `${sahmRule.toFixed(2)} (watching)` });
+  } else {
+    signals.push({ name: 'Sahm Rule', status: 'green', detail: `${sahmRule.toFixed(2)} (clear)` });
+  }
+
+  // Yield Curve
+  if (yieldInversion) {
+    score += 1;
+    signals.push({ name: 'Yield Curve', status: 'red', detail: 'Inverted' });
+  } else {
+    signals.push({ name: 'Yield Curve', status: 'green', detail: 'Normal' });
+  }
+
+  // Unemployment trend
+  if (unemploymentTrend === 'rising') {
+    score += 1;
+    signals.push({ name: 'Unemployment', status: 'yellow', detail: 'Rising' });
+  } else if (unemploymentTrend === 'falling') {
+    signals.push({ name: 'Unemployment', status: 'green', detail: 'Falling' });
+  } else {
+    signals.push({ name: 'Unemployment', status: 'green', detail: 'Stable' });
+  }
+
+  // Determine overall status
+  let overallStatus, statusText, statusDescription;
+  if (score >= 3) {
+    overallStatus = 'red';
+    statusText = 'HIGH RISK';
+    statusDescription = 'Multiple recession indicators triggered. Economic contraction likely.';
+  } else if (score >= 1) {
+    overallStatus = 'yellow';
+    statusText = 'CAUTION';
+    statusDescription = 'Some warning signs present. Monitor closely.';
+  } else {
+    overallStatus = 'green';
+    statusText = 'ALL CLEAR';
+    statusDescription = 'No major recession signals. Economy appears healthy.';
+  }
+
+  const statusColors = {
+    green: { bg: 'bg-emerald-500', glow: 'shadow-emerald-500/50', border: 'border-emerald-500/30', text: 'text-emerald-400' },
+    yellow: { bg: 'bg-amber-500', glow: 'shadow-amber-500/50', border: 'border-amber-500/30', text: 'text-amber-400' },
+    red: { bg: 'bg-red-500', glow: 'shadow-red-500/50', border: 'border-red-500/30', text: 'text-red-400' },
+  };
+
+  const current = statusColors[overallStatus];
+
+  return (
+    <div className={`bg-slate-800/50 border ${current.border} rounded-xl p-6`}>
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">🚦</span>
+        <h3 className="text-lg font-semibold text-white">Recession Risk Monitor</h3>
+      </div>
+
+      {/* Traffic Light */}
+      <div className="flex items-center gap-6 mb-6">
+        <div className="flex flex-col gap-2">
+          {['red', 'yellow', 'green'].map((color) => (
+            <div
+              key={color}
+              className={`w-8 h-8 rounded-full ${
+                overallStatus === color
+                  ? `${statusColors[color].bg} ${statusColors[color].glow} shadow-lg animate-pulse`
+                  : 'bg-slate-700'
+              }`}
+            />
+          ))}
+        </div>
+        <div>
+          <p className={`text-2xl font-bold ${current.text}`}>{statusText}</p>
+          <p className="text-slate-400 text-sm mt-1">{statusDescription}</p>
+        </div>
+      </div>
+
+      {/* Individual Signals */}
+      <div className="space-y-2">
+        <p className="text-slate-500 text-xs uppercase tracking-wide mb-2">Indicators</p>
+        {signals.map((signal) => (
+          <div key={signal.name} className="flex items-center justify-between bg-slate-700/30 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${statusColors[signal.status].bg}`} />
+              <span className="text-slate-300 text-sm">{signal.name}</span>
+            </div>
+            <span className={`text-sm ${statusColors[signal.status].text}`}>{signal.detail}</span>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-slate-500 text-xs mt-4">
+        Based on Sahm Rule, yield curve, and unemployment trends. Not investment advice.
+      </p>
+    </div>
+  );
+};
+
 const SummaryCard = ({ title, value, unit, change, color = 'blue' }) => {
   const isPositive = change >= 0
   const changeColor = title.includes('Unemployment') || title.includes('Inflation') 
@@ -391,6 +503,7 @@ export default function FredDashboard() {
           {/* Personal Impact Section */}
           <div className="grid lg:grid-cols-2 gap-6 mb-8">
             <InflationWallet />
+            <RecessionTrafficLight indicators={data.recessionIndicators} />
           </div>
 
           {/* Charts Grid */}
