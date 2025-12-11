@@ -3,6 +3,23 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, ReferenceLine } from 'recharts'
 
+// Data Freshness Tag Component
+const DataTag = ({ isLive, label, lastUpdate }) => {
+  if (isLive) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs text-emerald-400">
+        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+        LIVE
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded text-xs text-slate-400">
+      {label || 'Static'}{lastUpdate ? ` • ${lastUpdate}` : ''}
+    </span>
+  );
+};
+
 // FRED Series IDs for reference:
 // GDP: GDP, GDPC1 (real)
 // Unemployment: UNRATE
@@ -12,6 +29,43 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart,
 // 2Y Treasury: DGS2
 // 30Y Mortgage: MORTGAGE30US
 // Housing Starts: HOUST
+
+// Error Banner Component
+const ErrorBanner = ({ message, onRetry }) => (
+  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+          <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-red-400 font-medium">Unable to load live data</p>
+          <p className="text-slate-500 text-sm">{message || 'Showing cached data. Some information may be outdated.'}</p>
+        </div>
+      </div>
+      {onRetry && (
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-medium transition-colors"
+        >
+          Retry
+        </button>
+      )}
+    </div>
+  </div>
+);
+
+// Data Disclaimer Component
+const DataDisclaimer = () => (
+  <div className="mt-8 pt-6 border-t border-slate-700/50">
+    <p className="text-slate-600 text-xs text-center">
+      <strong className="text-slate-500">Disclaimer:</strong> Data is provided for informational purposes only and should not be considered financial advice.
+      While we strive for accuracy, data may be delayed or contain errors. Always verify with official sources before making financial decisions.
+    </p>
+  </div>
+);
 
 // December 2025 Demo Data - Replace with live FRED API calls
 const DEMO_DATA = {
@@ -104,9 +158,12 @@ const InflationWallet = ({ cpiCurrent, cpiBaseline }) => {
 
   return (
     <div className="bg-gradient-to-br from-red-900/30 to-orange-900/20 border border-red-500/30 rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl">💸</span>
-        <h3 className="text-lg font-semibold text-white">Your Dollar's Purchasing Power</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">💸</span>
+          <h3 className="text-lg font-semibold text-white">Your Dollar's Purchasing Power</h3>
+        </div>
+        <DataTag isLive={true} />
       </div>
 
       <div className="text-center mb-6">
@@ -158,6 +215,92 @@ const InflationWallet = ({ cpiCurrent, cpiBaseline }) => {
           );
         })}
       </div>
+    </div>
+  );
+};
+
+// Your Salary Is Shrinking Component - Real wage calculator
+const SalaryShrinking = ({ cpiCurrent, cpiBaseline }) => {
+  const [salary2020, setSalary2020] = useState(75000);
+
+  const CPI_2020 = cpiBaseline || 257.971;
+  const CPI_NOW = cpiCurrent || 314.5;
+
+  // What you'd need today to have same purchasing power
+  const equivalentToday = Math.round(salary2020 * (CPI_NOW / CPI_2020));
+  const difference = equivalentToday - salary2020;
+  const percentIncrease = ((CPI_NOW / CPI_2020 - 1) * 100).toFixed(1);
+
+  // Common salary benchmarks
+  const benchmarks = [
+    { label: '$50K in 2020', then: 50000 },
+    { label: '$75K in 2020', then: 75000 },
+    { label: '$100K in 2020', then: 100000 },
+    { label: '$150K in 2020', then: 150000 },
+  ];
+
+  const formatCurrency = (num) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">📉</span>
+          <h3 className="text-lg font-semibold text-white">Your Salary Is Shrinking</h3>
+        </div>
+        <DataTag isLive={true} />
+      </div>
+
+      <p className="text-slate-400 text-sm mb-4">
+        Even if your paycheck looks the same, inflation has eroded its value. Enter your 2020 salary:
+      </p>
+
+      {/* Input */}
+      <div className="mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400">$</span>
+          <input
+            type="number"
+            value={salary2020}
+            onChange={(e) => setSalary2020(Number(e.target.value) || 0)}
+            className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-lg font-semibold focus:outline-none focus:border-purple-500"
+            placeholder="75000"
+          />
+          <span className="text-slate-500 text-sm">in 2020</span>
+        </div>
+      </div>
+
+      {/* Result */}
+      <div className="bg-slate-800/50 rounded-lg p-4 mb-4">
+        <p className="text-slate-400 text-sm mb-2">To have the same purchasing power today, you'd need:</p>
+        <p className="text-3xl font-bold text-white mb-1">{formatCurrency(equivalentToday)}</p>
+        <p className="text-purple-400 text-sm">
+          That's <span className="font-semibold">+{formatCurrency(difference)}</span> more ({percentIncrease}% raise needed)
+        </p>
+      </div>
+
+      {/* Quick reference */}
+      <div className="grid grid-cols-2 gap-2">
+        {benchmarks.map((b) => {
+          const needed = Math.round(b.then * (CPI_NOW / CPI_2020));
+          return (
+            <div
+              key={b.label}
+              className="bg-slate-700/30 rounded-lg p-2 cursor-pointer hover:bg-slate-700/50 transition-colors"
+              onClick={() => setSalary2020(b.then)}
+            >
+              <p className="text-slate-500 text-xs">{b.label}</p>
+              <p className="text-white font-semibold text-sm">→ {formatCurrency(needed)}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="text-slate-500 text-xs mt-4">
+        If you haven't gotten a {percentIncrease}% raise since 2020, you've taken a real pay cut.
+      </p>
     </div>
   );
 };
@@ -228,9 +371,12 @@ const RecessionTrafficLight = ({ indicators }) => {
 
   return (
     <div className={`bg-slate-800/50 border ${current.border} rounded-xl p-6`}>
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl">🚦</span>
-        <h3 className="text-lg font-semibold text-white">Recession Risk Monitor</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🚦</span>
+          <h3 className="text-lg font-semibold text-white">Recession Risk Monitor</h3>
+        </div>
+        <DataTag isLive={true} />
       </div>
 
       {/* Traffic Light */}
@@ -326,9 +472,12 @@ const ThenVsNow = () => {
 
   return (
     <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl">📊</span>
-        <h3 className="text-lg font-semibold text-white">Then vs Now</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">📊</span>
+          <h3 className="text-lg font-semibold text-white">Then vs Now</h3>
+        </div>
+        <DataTag label="Historical" lastUpdate="Dec 2024" />
       </div>
       <p className="text-slate-400 text-sm mb-4">How economic realities have changed over 44 years</p>
 
@@ -434,16 +583,15 @@ export default function FredDashboard() {
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(new Date())
 
-  useEffect(() => {
-    async function fetchFredData() {
-      try {
-        setLoading(true)
-        const res = await fetch('/api/fred')
-        if (!res.ok) throw new Error('Failed to fetch FRED data')
-        const liveData = await res.json()
-        
-        // Merge live data with demo data structure
-        setData(prev => ({
+  const fetchFredData = async () => {
+    try {
+      setLoading(true)
+      const res = await fetch('/api/fred')
+      if (!res.ok) throw new Error('Failed to fetch FRED data')
+      const liveData = await res.json()
+
+      // Merge live data with demo data structure
+      setData(prev => ({
           ...prev,
           summary: {
             gdp: { 
@@ -499,11 +647,12 @@ export default function FredDashboard() {
         console.error('Error fetching FRED data:', err)
         setError(err.message)
         // Keep demo data on error
-      } finally {
-        setLoading(false)
-      }
+    } finally {
+      setLoading(false)
     }
-    
+  }
+
+  useEffect(() => {
     fetchFredData()
   }, [])
 
@@ -573,6 +722,9 @@ export default function FredDashboard() {
             </div>
           </Link>
 
+          {/* Error Banner */}
+          {error && <ErrorBanner message={error} onRetry={fetchFredData} />}
+
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <SummaryCard
@@ -605,13 +757,18 @@ export default function FredDashboard() {
             />
           </div>
 
-          {/* Personal Impact Section */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
-            <InflationWallet cpiCurrent={data.cpiCurrent} cpiBaseline={data.cpiJan2020} />
+          {/* Hero: Answer the #1 Question - Is a recession coming? */}
+          <div className="mb-6">
             <RecessionTrafficLight indicators={data.recessionIndicators} />
           </div>
 
-          {/* Then vs Now - Full Width */}
+          {/* Personal Impact: Your Money Is Worth Less */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+            <InflationWallet cpiCurrent={data.cpiCurrent} cpiBaseline={data.cpiJan2020} />
+            <SalaryShrinking cpiCurrent={data.cpiCurrent} cpiBaseline={data.cpiJan2020} />
+          </div>
+
+          {/* Historical Context: Generational Comparison */}
           <div className="mb-8">
             <ThenVsNow />
           </div>
@@ -863,6 +1020,9 @@ export default function FredDashboard() {
               Series refresh on page load. API key configured.
             </p>
           </div>
+
+          {/* Data Disclaimer */}
+          <DataDisclaimer />
         </div>
       </main>
     </>

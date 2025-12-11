@@ -138,6 +138,9 @@ export default async function handler(req, res) {
       console.error('Error fetching GDP:', err);
     }
 
+    // Set cache headers (cache for 5 minutes, stale-while-revalidate for 10 min)
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+
     // Build response
     const responseData = {
       timestamp: new Date().toISOString(),

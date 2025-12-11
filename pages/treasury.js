@@ -5,6 +5,23 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart,
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
 
+// Data Freshness Tag Component
+const DataTag = ({ isLive, label, lastUpdate }) => {
+  if (isLive) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs text-emerald-400">
+        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+        LIVE
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded text-xs text-slate-400">
+      {label || 'Static'}{lastUpdate ? ` • ${lastUpdate}` : ''}
+    </span>
+  );
+};
+
 // US Population (2024 estimate)
 const US_POPULATION = 335_000_000;
 const AVG_HOUSEHOLD_SIZE = 2.5;
@@ -108,6 +125,9 @@ const InterestTicker = ({ annualInterest }) => {
 
   return (
     <div className="bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-xl p-6">
+      <div className="flex justify-end mb-2">
+        <DataTag isLive={true} />
+      </div>
       <div className="text-center">
         <p className="text-red-400 text-sm font-medium mb-2">Interest Paid Since You Opened This Page</p>
         <p className="text-4xl md:text-5xl font-bold text-white font-mono tracking-tight">
@@ -141,7 +161,10 @@ const YourShareCard = ({ totalDebt }) => {
 
   return (
     <div className="bg-gradient-to-br from-amber-900/20 to-orange-950/20 border border-amber-500/30 rounded-xl p-6">
-      <h3 className="text-amber-400 text-sm font-medium mb-3">Your Share of the National Debt</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-amber-400 text-sm font-medium">Your Share of the National Debt</h3>
+        <DataTag isLive={true} />
+      </div>
       <p className="text-5xl font-bold text-white mb-2">{formatMoney(perCapita)}</p>
       <p className="text-slate-400 text-sm mb-4">per U.S. citizen</p>
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700">
@@ -212,7 +235,10 @@ const BirthYearCalculator = ({ currentDebt }) => {
 
   return (
     <div className="bg-gradient-to-br from-indigo-900/20 to-purple-950/20 border border-indigo-500/30 rounded-xl p-6">
-      <h3 className="text-indigo-400 text-sm font-medium mb-4">Debt in Your Lifetime</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-indigo-400 text-sm font-medium">Debt in Your Lifetime</h3>
+        <DataTag label="Historical" lastUpdate="Dec 2025" />
+      </div>
       <div className="flex gap-3 mb-4">
         <input
           type="number"
@@ -264,10 +290,13 @@ const InterestVsDefenseCallout = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs font-medium">HISTORIC</span>
-            <span className="text-slate-500 text-xs">FY 2024</span>
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs font-medium">HISTORIC</span>
+              <span className="text-slate-500 text-xs">FY 2024</span>
+            </div>
+            <DataTag label="Annual" lastUpdate="FY 2024" />
           </div>
           <h3 className="text-white text-lg font-semibold mb-2">
             Interest Payments Now Exceed Defense Spending
@@ -305,7 +334,10 @@ const TaxDollarBreakdown = () => {
 
   return (
     <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-white mb-2">Where Your Tax Dollar Goes</h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold text-white">Where Your Tax Dollar Goes</h3>
+        <DataTag label="Annual" lastUpdate="FY 2024" />
+      </div>
       <p className="text-slate-500 text-sm mb-4">FY 2024 Federal Spending Breakdown</p>
       <div className="space-y-3">
         {items.map((item) => {
@@ -332,6 +364,142 @@ const TaxDollarBreakdown = () => {
     </div>
   );
 };
+
+// What Interest Could Buy Component - Opportunity cost visualization
+const WhatInterestCouldBuy = ({ annualInterest }) => {
+  const interest = annualInterest || 1.1e12; // $1.1 trillion default
+
+  // What $1.1 trillion could fund (approximate costs)
+  const alternatives = [
+    {
+      icon: '👩‍🏫',
+      label: 'Public School Teachers',
+      count: Math.floor(interest / 65000), // $65K avg salary
+      unit: 'teachers',
+      description: 'at $65K average salary'
+    },
+    {
+      icon: '🎓',
+      label: 'Free Public College',
+      count: Math.floor(interest / 10000), // ~$10K avg tuition
+      unit: 'students',
+      description: 'full tuition for a year'
+    },
+    {
+      icon: '🏥',
+      label: 'Medicare for All (partial)',
+      count: Math.floor((interest / 4e12) * 100), // ~$4T total cost
+      unit: '% of cost',
+      description: 'of estimated annual cost'
+    },
+    {
+      icon: '🏠',
+      label: 'Affordable Housing Units',
+      count: Math.floor(interest / 250000), // $250K per unit
+      unit: 'homes',
+      description: 'at $250K per unit'
+    },
+    {
+      icon: '🛣️',
+      label: 'Infrastructure Projects',
+      count: Math.floor(interest / 1.2e12 * 100), // Infrastructure bill was $1.2T
+      unit: '% of 2021 bill',
+      description: 'of the Infrastructure Investment Act'
+    },
+    {
+      icon: '💵',
+      label: 'Direct Payment to Every American',
+      count: Math.floor(interest / US_POPULATION),
+      unit: 'per person',
+      description: 'one-time payment',
+      isCurrency: true
+    },
+  ];
+
+  const formatNumber = (num) => {
+    if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
+    if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+    if (num >= 1e3) return `${(num / 1e3).toFixed(0)}K`;
+    return num.toLocaleString();
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-xl p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">💸</span>
+          <h3 className="text-lg font-semibold text-white">What $1.1T Interest Could Buy</h3>
+        </div>
+        <DataTag label="Annual" lastUpdate="FY 2024" />
+      </div>
+      <p className="text-slate-400 text-sm mb-4">
+        Every year, we pay $1.1 trillion in interest — money that buys nothing. Here's what it could fund instead:
+      </p>
+
+      <div className="grid grid-cols-2 gap-3">
+        {alternatives.map((alt) => (
+          <div key={alt.label} className="bg-slate-800/50 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xl">{alt.icon}</span>
+              <span className="text-slate-300 text-sm font-medium">{alt.label}</span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-amber-400 text-xl font-bold">
+                {alt.isCurrency ? '$' : ''}{formatNumber(alt.count)}
+              </span>
+              <span className="text-slate-500 text-xs">{alt.unit}</span>
+            </div>
+            <p className="text-slate-600 text-xs mt-1">{alt.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+        <p className="text-red-400 text-sm">
+          <strong>The catch:</strong> We can't redirect this money — it's already owed to bondholders.
+          This is the opportunity cost of past borrowing.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Error Banner Component
+const ErrorBanner = ({ message, onRetry }) => (
+  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+          <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-red-400 font-medium">Unable to load live data</p>
+          <p className="text-slate-500 text-sm">{message || 'Showing cached data. Some information may be outdated.'}</p>
+        </div>
+      </div>
+      {onRetry && (
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-medium transition-colors"
+        >
+          Retry
+        </button>
+      )}
+    </div>
+  </div>
+);
+
+// Data Disclaimer Component
+const DataDisclaimer = () => (
+  <div className="mt-8 pt-6 border-t border-slate-700/50">
+    <p className="text-slate-600 text-xs text-center">
+      <strong className="text-slate-500">Disclaimer:</strong> Data is provided for informational purposes only and should not be considered financial advice.
+      While we strive for accuracy, data may be delayed or contain errors. Always verify with official sources before making financial decisions.
+    </p>
+  </div>
+);
 
 // Demo data for fallback
 const DEMO_DATA = {
@@ -375,27 +543,27 @@ export default function TreasuryDashboard() {
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(new Date())
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true)
-        const res = await fetch('/api/treasury')
-        if (!res.ok) throw new Error('Failed to fetch Treasury data')
-        const liveData = await res.json()
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const res = await fetch('/api/treasury')
+      if (!res.ok) throw new Error('Failed to fetch Treasury data')
+      const liveData = await res.json()
 
-        if (liveData.summary) {
-          setData(liveData)
-          setLastUpdated(new Date(liveData.timestamp))
-        }
-        setError(null)
-      } catch (err) {
-        console.error('Error fetching Treasury data:', err)
-        setError(err.message)
-      } finally {
-        setLoading(false)
+      if (liveData.summary) {
+        setData(liveData)
+        setLastUpdated(new Date(liveData.timestamp))
       }
+      setError(null)
+    } catch (err) {
+      console.error('Error fetching Treasury data:', err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -448,6 +616,9 @@ export default function TreasuryDashboard() {
             </div>
           </div>
 
+          {/* Error Banner */}
+          {error && <ErrorBanner message={error} onRetry={fetchData} />}
+
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <SummaryCard
@@ -497,19 +668,24 @@ export default function TreasuryDashboard() {
             />
           </div>
 
-          {/* Interest vs Defense Alert */}
+          {/* Hero Section: Your Share - Personal Hook */}
           <div className="mb-6">
-            <InterestVsDefenseCallout />
+            <YourShareCard totalDebt={data.summary.totalDebt?.value} />
           </div>
 
-          {/* Live Interest Ticker */}
+          {/* Urgency: Live Interest Ticker */}
           <div className="mb-6">
             <InterestTicker annualInterest={data.summary.annualInterest?.value} />
           </div>
 
-          {/* Personal Impact Section */}
-          <div className="grid lg:grid-cols-3 gap-6 mb-6">
-            <YourShareCard totalDebt={data.summary.totalDebt?.value} />
+          {/* Context: Interest Alert + Opportunity Cost (side by side) */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+            <InterestVsDefenseCallout />
+            <WhatInterestCouldBuy annualInterest={data.summary.annualInterest?.value} />
+          </div>
+
+          {/* Personal History + Budget Context */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-6">
             <BirthYearCalculator currentDebt={data.summary.totalDebt?.value} />
             <TaxDollarBreakdown />
           </div>
@@ -714,6 +890,9 @@ export default function TreasuryDashboard() {
               No API key required for Treasury data.
             </p>
           </div>
+
+          {/* Data Disclaimer */}
+          <DataDisclaimer />
         </div>
       </main>
     </>

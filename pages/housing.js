@@ -3,6 +3,33 @@ import Link from 'next/link'
 import { useState, useMemo, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts'
 
+// Data Disclaimer Component
+const DataDisclaimer = () => (
+  <div className="mt-8 pt-6 border-t border-slate-700/50">
+    <p className="text-slate-600 text-xs text-center">
+      <strong className="text-slate-500">Disclaimer:</strong> Data is provided for informational purposes only and should not be considered financial advice.
+      While we strive for accuracy, data may be delayed or contain errors. Always verify with official sources before making financial decisions.
+    </p>
+  </div>
+);
+
+// Data Freshness Tag Component
+const DataTag = ({ isLive, label, lastUpdate }) => {
+  if (isLive) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs text-emerald-400">
+        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+        LIVE
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded text-xs text-slate-400">
+      {label || 'Static'}{lastUpdate ? ` • ${lastUpdate}` : ''}
+    </span>
+  );
+};
+
 // HUD Fair Market Rents - FY 2025 Sample Data by Metro
 // Source: https://www.huduser.gov/portal/datasets/fmr.html
 const FMR_DATA = {
@@ -40,7 +67,7 @@ const formatCurrency = (num) => {
 }
 
 // Verdict Badge Component - Clear affordability tier
-const VerdictBadge = ({ ratio }) => {
+const VerdictBadge = ({ ratio, isLive }) => {
   let verdict, description, bgColor, textColor, icon;
 
   if (ratio <= 25) {
@@ -70,7 +97,10 @@ const VerdictBadge = ({ ratio }) => {
   }
 
   return (
-    <div className={`bg-gradient-to-br ${bgColor} border rounded-xl p-6 text-center`}>
+    <div className={`bg-gradient-to-br ${bgColor} border rounded-xl p-6 text-center relative`}>
+      <div className="absolute top-3 right-3">
+        <DataTag isLive={isLive} label="Sample" lastUpdate="FY 2025" />
+      </div>
       <div className={`text-4xl mb-2`}>{icon}</div>
       <h3 className={`text-2xl font-bold ${textColor} mb-2`}>{verdict}</h3>
       <p className="text-slate-400 text-sm">{description}</p>
@@ -84,7 +114,7 @@ const VerdictBadge = ({ ratio }) => {
 };
 
 // Years to Save Down Payment Calculator
-const DownPaymentCalculator = ({ homePrice, monthlyIncome, monthlyRent }) => {
+const DownPaymentCalculator = ({ homePrice, monthlyIncome, monthlyRent, isLive }) => {
   const downPayment20 = homePrice * 0.20;
   const downPayment10 = homePrice * 0.10;
   const downPayment5 = homePrice * 0.05;
@@ -100,9 +130,12 @@ const DownPaymentCalculator = ({ homePrice, monthlyIncome, monthlyRent }) => {
 
   return (
     <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl">🎯</span>
-        <h3 className="text-lg font-semibold text-white">Years to Save Down Payment</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🎯</span>
+          <h3 className="text-lg font-semibold text-white">Years to Save Down Payment</h3>
+        </div>
+        <DataTag isLive={isLive} label="Calculator" />
       </div>
 
       <p className="text-slate-400 text-sm mb-4">
@@ -152,7 +185,7 @@ const DownPaymentCalculator = ({ homePrice, monthlyIncome, monthlyRent }) => {
 };
 
 // Roommate Math Component
-const RoommateMath = ({ studioRent, oneBrRent, twoBrRent, threeBrRent }) => {
+const RoommateMath = ({ studioRent, oneBrRent, twoBrRent, threeBrRent, isLive }) => {
   const scenarios = [
     {
       label: 'Living Alone (Studio)',
@@ -188,9 +221,12 @@ const RoommateMath = ({ studioRent, oneBrRent, twoBrRent, threeBrRent }) => {
 
   return (
     <div className="bg-gradient-to-br from-cyan-900/20 to-teal-900/20 border border-cyan-500/30 rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl">🏠</span>
-        <h3 className="text-lg font-semibold text-white">Roommate Math</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🏠</span>
+          <h3 className="text-lg font-semibold text-white">Roommate Math</h3>
+        </div>
+        <DataTag isLive={isLive} label="Sample" lastUpdate="FY 2025" />
       </div>
 
       <p className="text-slate-400 text-sm mb-4">
@@ -234,6 +270,188 @@ const RoommateMath = ({ studioRent, oneBrRent, twoBrRent, threeBrRent }) => {
           3BR split 3 ways saves {formatCurrency((baseline - threeBrRent/3) * 12)}/year vs studio
         </p>
       </div>
+    </div>
+  );
+};
+
+// ZIP Comparison Component - Compare affordability across multiple ZIPs
+const ZipComparison = ({ income, bedrooms }) => {
+  const [zips, setZips] = useState(['', '', '']);
+  const [results, setResults] = useState([null, null, null]);
+  const [loading, setLoading] = useState([false, false, false]);
+  const [errors, setErrors] = useState(['', '', '']);
+
+  const monthlyIncome = income / 12;
+
+  const fetchZipData = async (zip, index) => {
+    if (!zip || zip.length !== 5) {
+      setResults(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+      return;
+    }
+
+    setLoading(prev => {
+      const updated = [...prev];
+      updated[index] = true;
+      return updated;
+    });
+    setErrors(prev => {
+      const updated = [...prev];
+      updated[index] = '';
+      return updated;
+    });
+
+    try {
+      const res = await fetch(`/api/housing?zip=${zip}`);
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+
+      if (data.fmr && data.fmr.fmr && data.fmr.fmr[bedrooms]) {
+        const rent = data.fmr.fmr[bedrooms];
+        const ratio = (rent / monthlyIncome) * 100;
+        setResults(prev => {
+          const updated = [...prev];
+          updated[index] = {
+            zip,
+            rent,
+            ratio,
+            location: data.fmr.metroName || data.fmr.countyName || `ZIP ${zip}`,
+            affordable: ratio <= 30
+          };
+          return updated;
+        });
+      } else {
+        setErrors(prev => {
+          const updated = [...prev];
+          updated[index] = 'No data';
+          return updated;
+        });
+        setResults(prev => {
+          const updated = [...prev];
+          updated[index] = null;
+          return updated;
+        });
+      }
+    } catch (err) {
+      setErrors(prev => {
+        const updated = [...prev];
+        updated[index] = 'Error';
+        return updated;
+      });
+    } finally {
+      setLoading(prev => {
+        const updated = [...prev];
+        updated[index] = false;
+        return updated;
+      });
+    }
+  };
+
+  const handleZipChange = (index, value) => {
+    const cleaned = value.replace(/\D/g, '').slice(0, 5);
+    setZips(prev => {
+      const updated = [...prev];
+      updated[index] = cleaned;
+      return updated;
+    });
+
+    // Auto-fetch when 5 digits entered
+    if (cleaned.length === 5) {
+      fetchZipData(cleaned, index);
+    } else {
+      setResults(prev => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+    }
+  };
+
+  const getVerdictColor = (ratio) => {
+    if (ratio <= 25) return { bg: 'bg-emerald-500/20', border: 'border-emerald-500/40', text: 'text-emerald-400' };
+    if (ratio <= 30) return { bg: 'bg-lime-500/20', border: 'border-lime-500/40', text: 'text-lime-400' };
+    if (ratio <= 40) return { bg: 'bg-amber-500/20', border: 'border-amber-500/40', text: 'text-amber-400' };
+    return { bg: 'bg-red-500/20', border: 'border-red-500/40', text: 'text-red-400' };
+  };
+
+  const affordableCount = results.filter(r => r?.affordable).length;
+
+  return (
+    <div className="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 border border-emerald-500/30 rounded-xl p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">📍</span>
+          <h3 className="text-lg font-semibold text-white">Where You CAN Afford</h3>
+        </div>
+        <DataTag isLive={true} />
+      </div>
+
+      <p className="text-slate-400 text-sm mb-4">
+        Compare up to 3 ZIP codes to find affordable options at your income ({formatCurrency(income)}/yr)
+      </p>
+
+      {/* ZIP Inputs */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i}>
+            <input
+              type="text"
+              placeholder={`ZIP ${i + 1}`}
+              value={zips[i]}
+              onChange={(e) => handleZipChange(i, e.target.value)}
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-center placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            />
+            {loading[i] && <p className="text-slate-500 text-xs text-center mt-1">Loading...</p>}
+            {errors[i] && <p className="text-red-400 text-xs text-center mt-1">{errors[i]}</p>}
+          </div>
+        ))}
+      </div>
+
+      {/* Results */}
+      <div className="grid grid-cols-3 gap-3">
+        {results.map((r, i) => {
+          if (!r) {
+            return (
+              <div key={i} className="bg-slate-800/30 rounded-lg p-3 text-center">
+                <p className="text-slate-600 text-sm">Enter ZIP</p>
+              </div>
+            );
+          }
+
+          const colors = getVerdictColor(r.ratio);
+          return (
+            <div key={i} className={`${colors.bg} border ${colors.border} rounded-lg p-3 text-center`}>
+              <p className="text-slate-400 text-xs truncate mb-1" title={r.location}>{r.location}</p>
+              <p className="text-white font-bold">{formatCurrency(r.rent)}/mo</p>
+              <p className={`text-sm font-semibold ${colors.text}`}>
+                {r.ratio.toFixed(0)}%
+              </p>
+              <p className={`text-xs ${colors.text}`}>
+                {r.affordable ? '✓ Affordable' : '✗ Too High'}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Summary */}
+      {results.some(r => r !== null) && (
+        <div className={`mt-4 p-3 rounded-lg ${affordableCount > 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
+          <p className={`text-sm font-medium ${affordableCount > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {affordableCount > 0
+              ? `✓ ${affordableCount} of ${results.filter(r => r).length} locations are affordable at your income`
+              : `✗ None of these locations are affordable — try different ZIPs or consider roommates`
+            }
+          </p>
+        </div>
+      )}
+
+      <p className="text-slate-500 text-xs mt-3">
+        Tip: Try suburbs, nearby metros, or different states to find affordable options.
+      </p>
     </div>
   );
 };
@@ -731,10 +949,30 @@ export default function HousingAffordability() {
 
             {/* Results Panel */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Verdict Badge - Clear Answer */}
-              <VerdictBadge ratio={calculations.rentToIncomeRatio} />
+              {/* 1. THE ANSWER: Verdict Badge */}
+              <VerdictBadge ratio={calculations.rentToIncomeRatio} isLive={isLiveFmr} />
 
-              {/* Affordability Gauges */}
+              {/* 2. HOPE: If unaffordable, find alternatives */}
+              <ZipComparison income={income} bedrooms={bedrooms} />
+
+              {/* 3. OPTIONS: Ways to make it work */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <RoommateMath
+                  studioRent={liveFmr ? liveFmr.fmr[0] : metroData.fmr[0]}
+                  oneBrRent={liveFmr ? liveFmr.fmr[1] : metroData.fmr[1]}
+                  twoBrRent={liveFmr ? liveFmr.fmr[2] : metroData.fmr[2]}
+                  threeBrRent={liveFmr ? liveFmr.fmr[3] : metroData.fmr[3]}
+                  isLive={isLiveFmr}
+                />
+                <DownPaymentCalculator
+                  homePrice={homePrice}
+                  monthlyIncome={calculations.monthlyIncome}
+                  monthlyRent={calculations.monthlyRent}
+                  isLive={isLiveFmr}
+                />
+              </div>
+
+              {/* 4. SUPPORTING DATA: Affordability Analysis */}
               <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-white mb-6">Affordability Analysis</h2>
                 <div className="grid grid-cols-3 gap-6">
@@ -762,22 +1000,7 @@ export default function HousingAffordability() {
                 </div>
               </div>
 
-              {/* New Feature Cards */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <DownPaymentCalculator
-                  homePrice={homePrice}
-                  monthlyIncome={calculations.monthlyIncome}
-                  monthlyRent={calculations.monthlyRent}
-                />
-                <RoommateMath
-                  studioRent={liveFmr ? liveFmr.fmr[0] : metroData.fmr[0]}
-                  oneBrRent={liveFmr ? liveFmr.fmr[1] : metroData.fmr[1]}
-                  twoBrRent={liveFmr ? liveFmr.fmr[2] : metroData.fmr[2]}
-                  threeBrRent={liveFmr ? liveFmr.fmr[3] : metroData.fmr[3]}
-                />
-              </div>
-
-              {/* Monthly Budget Breakdown */}
+              {/* 5. BUDGET DETAILS: Monthly Breakdown */}
               <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">Monthly Budget Breakdown</h2>
                 <div className="flex flex-col md:flex-row md:items-center gap-8">
@@ -925,13 +1148,16 @@ export default function HousingAffordability() {
               </div>
             </div>
             <p className="text-slate-500 text-sm mt-4">
-              {isLiveFmr 
+              {isLiveFmr
                 ? `Live FMR data from HUD API for ZIP ${zipCode}. `
                 : 'Sample FMR data for major metros. Enter a ZIP code for live HUD data. '
               }
               {ratesLive ? 'Mortgage rates live from FRED.' : 'Using default mortgage rates.'}
             </p>
           </div>
+
+          {/* Data Disclaimer */}
+          <DataDisclaimer />
         </div>
       </main>
     </>
