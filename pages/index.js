@@ -150,15 +150,16 @@ export default function Home() {
           </div>
 
           {/* Consumer at a Glance */}
-          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900 border border-slate-700 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+          <Link href="/money" className="block mb-6 md:mb-8 group">
+          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900 border border-slate-700 rounded-xl p-4 md:p-6 hover:border-purple-500/50 transition-colors">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <h2 className="text-lg font-semibold text-white">Consumer at a Glance</h2>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {loading ? (
                   <span className="text-slate-500 text-xs">Loading...</span>
                 ) : (
@@ -167,6 +168,12 @@ export default function Home() {
                     LIVE
                   </span>
                 )}
+                <span className="text-purple-400 text-sm font-medium group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                  Your Money
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
@@ -203,6 +210,7 @@ export default function Home() {
               />
             </div>
           </div>
+          </Link>
 
           {/* AI Briefing Banner */}
           <Link href="/briefing" className="group block mb-6 md:mb-8">
@@ -234,7 +242,7 @@ export default function Home() {
           </Link>
 
           {/* Dashboard Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-8 md:mb-16">
             {/* FRED Dashboard Card */}
             <Link href="/fred" className="group">
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl md:rounded-2xl p-4 md:p-6 card-hover h-full">
@@ -360,6 +368,39 @@ export default function Home() {
 
                 <div className="flex items-center text-amber-400 text-xs md:text-sm font-medium group-hover:translate-x-2 transition-transform">
                   View Prices
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+
+            {/* Your Money Card */}
+            <Link href="/money" className="group">
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl md:rounded-2xl p-4 md:p-6 card-hover h-full">
+                <div className="flex items-center gap-3 mb-3 md:mb-4">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 md:w-6 md:h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-lg md:text-xl font-bold text-white">Your Money</h2>
+                </div>
+
+                <p className="text-slate-400 text-xs md:text-sm mb-3 md:mb-4">
+                  See how inflation affects your wallet, salary, and generational wealth.
+                </p>
+
+                <div className="flex flex-wrap gap-1.5 mb-3 md:mb-4">
+                  {['Purchasing Power', 'Salary', 'Then vs Now'].map(tag => (
+                    <span key={tag} className="px-2 py-0.5 bg-slate-700/50 text-slate-300 rounded-full text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center text-purple-400 text-xs md:text-sm font-medium group-hover:translate-x-2 transition-transform">
+                  Explore
                   <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
