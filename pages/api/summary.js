@@ -17,7 +17,9 @@ const SERIES = {
 };
 
 async function fetchFredSeries(seriesId, limit = 13) {
-  const url = `${FRED_BASE}?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=${limit}`;
+  // Use realtime_end=9999-12-31 to always get the most current data vintage
+  // This ensures we get the latest available data regardless of timezone
+  const url = `${FRED_BASE}?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=${limit}&realtime_start=1776-07-04&realtime_end=9999-12-31`;
 
   try {
     const res = await fetch(url);
