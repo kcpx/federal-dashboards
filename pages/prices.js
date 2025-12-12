@@ -417,100 +417,6 @@ const FeaturedItem = ({ item }) => {
   );
 };
 
-// Annual Cost Calculator
-const AnnualCostCalculator = ({ food }) => {
-  const [quantities, setQuantities] = useState({
-    eggs: 2,      // dozens per month
-    milk: 4,      // gallons per month
-    bread: 4,     // loaves per month
-    chicken: 4,   // lbs per month
-    ground_beef: 3, // lbs per month
-    bacon: 2,     // lbs per month
-  });
-
-  const items = ['eggs', 'milk', 'bread', 'chicken', 'ground_beef', 'bacon'];
-
-  const monthlyCost = items.reduce((sum, key) => {
-    return sum + (food[key]?.current || 0) * (quantities[key] || 0);
-  }, 0);
-
-  const monthlyLastYear = items.reduce((sum, key) => {
-    return sum + (food[key]?.yearAgo || 0) * (quantities[key] || 0);
-  }, 0);
-
-  const annualCost = monthlyCost * 12;
-  const annualLastYear = monthlyLastYear * 12;
-  const annualDiff = annualCost - annualLastYear;
-
-  return (
-    <div className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border border-blue-500/30 rounded-xl p-4 md:p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🧮</span>
-          <h3 className="text-lg font-semibold text-white">Your Annual Grocery Cost</h3>
-        </div>
-        <DataTag label="Calculator" />
-      </div>
-
-      <p className="text-slate-400 text-sm mb-4">
-        Adjust quantities to match your household's monthly consumption:
-      </p>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-        {items.map(key => {
-          const item = food[key];
-          if (!item) return null;
-          return (
-            <div key={key} className="bg-slate-800/50 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <span>{item.icon}</span>
-                <span className="text-slate-300 text-xs">{item.name.split('(')[0].trim()}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  value={quantities[key]}
-                  onChange={(e) => setQuantities(prev => ({
-                    ...prev,
-                    [key]: parseInt(e.target.value) || 0
-                  }))}
-                  className="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-white text-center text-sm focus:outline-none focus:border-blue-500"
-                />
-                <span className="text-slate-500 text-xs">/ mo</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="bg-slate-800/50 rounded-lg p-4">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-slate-400 text-xs mb-1">Monthly</p>
-            <p className="text-xl font-bold text-white">${monthlyCost.toFixed(0)}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-xs mb-1">Annual</p>
-            <p className="text-xl font-bold text-white">${annualCost.toFixed(0)}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-xs mb-1">vs Last Year</p>
-            <p className={`text-xl font-bold ${annualDiff > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-              {annualDiff > 0 ? '+' : ''}${annualDiff.toFixed(0)}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <p className="text-slate-500 text-xs mt-4 text-center">
-        Based on current national average prices
-      </p>
-    </div>
-  );
-};
-
 export default function CostOfLivingDashboard() {
   const [data, setData] = useState(DEMO_DATA);
   const [loading, setLoading] = useState(true);
@@ -672,11 +578,6 @@ export default function CostOfLivingDashboard() {
           {/* Gas Prices */}
           <div className="mb-6">
             <GasPricesSection gas={data.gas} />
-          </div>
-
-          {/* Annual Cost Calculator */}
-          <div className="mb-6">
-            <AnnualCostCalculator food={data.food} />
           </div>
 
           {/* Data Sources */}
