@@ -67,51 +67,52 @@ const DataDisclaimer = () => (
   </div>
 );
 
-// December 2025 Demo Data - Replace with live FRED API calls
+// December 2025 Demo Data - Updated with latest available data
+// Note: Some data delayed due to Oct-Nov 2025 government shutdown
 const DEMO_DATA = {
   summary: {
-    gdp: { value: 28.64, change: 2.8, unit: 'T', name: 'Real GDP (Q3 2025)' },
-    unemployment: { value: 4.1, change: -0.2, unit: '%', name: 'Unemployment Rate' },
-    inflation: { value: 2.7, change: -0.4, unit: '%', name: 'CPI (YoY)' },
-    fedFunds: { value: 4.50, change: -0.75, unit: '%', name: 'Fed Funds Rate' },
+    gdp: { value: 23.40, change: 3.8, unit: 'T', name: 'Real GDP (Q2 2025)' },  // Q3 release Dec 23
+    unemployment: { value: 4.4, change: 0.1, unit: '%', name: 'Unemployment Rate' },  // Sep 2025 (Oct missed)
+    inflation: { value: 3.0, change: 0.1, unit: '%', name: 'CPI (YoY)' },  // Sep 2025 (Oct missed, Nov Dec 18)
+    fedFunds: { value: 3.625, change: -0.25, unit: '%', name: 'Fed Funds Rate' },  // Cut Dec 10 to 3.5-3.75%
   },
   gdpHistory: [
-    { date: '2023-Q1', value: 26.53 }, { date: '2023-Q2', value: 26.84 }, { date: '2023-Q3', value: 27.15 },
-    { date: '2023-Q4', value: 27.36 }, { date: '2024-Q1', value: 27.58 }, { date: '2024-Q2', value: 27.84 },
-    { date: '2024-Q3', value: 28.06 }, { date: '2024-Q4', value: 28.29 }, { date: '2025-Q1', value: 28.42 },
-    { date: '2025-Q2', value: 28.55 }, { date: '2025-Q3', value: 28.64 },
+    { date: '2023-Q1', value: 22.11 }, { date: '2023-Q2', value: 22.22 }, { date: '2023-Q3', value: 22.49 },
+    { date: '2023-Q4', value: 22.68 }, { date: '2024-Q1', value: 22.72 }, { date: '2024-Q2', value: 22.94 },
+    { date: '2024-Q3', value: 23.12 }, { date: '2024-Q4', value: 23.54 }, { date: '2025-Q1', value: 23.51 },
+    { date: '2025-Q2', value: 23.40 },
   ],
   unemploymentHistory: [
     { date: 'Jan 24', value: 3.7 }, { date: 'Mar 24', value: 3.8 }, { date: 'May 24', value: 4.0 },
     { date: 'Jul 24', value: 4.3 }, { date: 'Sep 24', value: 4.1 }, { date: 'Nov 24', value: 4.2 },
-    { date: 'Jan 25', value: 4.0 }, { date: 'Mar 25', value: 4.1 }, { date: 'May 25', value: 4.0 },
-    { date: 'Jul 25', value: 4.2 }, { date: 'Sep 25', value: 4.1 }, { date: 'Nov 25', value: 4.1 },
+    { date: 'Jan 25', value: 4.0 }, { date: 'Mar 25', value: 4.2 }, { date: 'May 25', value: 4.2 },
+    { date: 'Jul 25', value: 4.2 }, { date: 'Aug 25', value: 4.3 }, { date: 'Sep 25', value: 4.4 },
   ],
   inflationHistory: [
     { date: 'Jan 24', cpi: 3.1, pce: 2.6 }, { date: 'Mar 24', cpi: 3.5, pce: 2.7 },
     { date: 'May 24', cpi: 3.3, pce: 2.6 }, { date: 'Jul 24', cpi: 2.9, pce: 2.5 },
     { date: 'Sep 24', cpi: 2.4, pce: 2.2 }, { date: 'Nov 24', cpi: 2.7, pce: 2.4 },
-    { date: 'Jan 25', cpi: 2.9, pce: 2.5 }, { date: 'Mar 25', cpi: 2.8, pce: 2.4 },
-    { date: 'May 25', cpi: 2.6, pce: 2.3 }, { date: 'Jul 25', cpi: 2.5, pce: 2.2 },
-    { date: 'Sep 25', cpi: 2.6, pce: 2.3 }, { date: 'Nov 25', cpi: 2.7, pce: 2.4 },
+    { date: 'Jan 25', cpi: 3.0, pce: 2.5 }, { date: 'Mar 25', cpi: 2.4, pce: 2.3 },
+    { date: 'May 25', cpi: 2.8, pce: 2.4 }, { date: 'Jul 25', cpi: 2.9, pce: 2.5 },
+    { date: 'Aug 25', cpi: 2.9, pce: 2.5 }, { date: 'Sep 25', cpi: 3.0, pce: 2.6 },
   ],
   yieldCurve: [
-    { maturity: '1M', yield: 4.45 }, { maturity: '3M', yield: 4.42 }, { maturity: '6M', yield: 4.35 },
-    { maturity: '1Y', yield: 4.25 }, { maturity: '2Y', yield: 4.18 }, { maturity: '3Y', yield: 4.15 },
-    { maturity: '5Y', yield: 4.20 }, { maturity: '7Y', yield: 4.28 }, { maturity: '10Y', yield: 4.35 },
-    { maturity: '20Y', yield: 4.58 }, { maturity: '30Y', yield: 4.55 },
+    { maturity: '1M', yield: 4.32 }, { maturity: '3M', yield: 4.31 }, { maturity: '6M', yield: 4.25 },
+    { maturity: '1Y', yield: 4.15 }, { maturity: '2Y', yield: 4.14 }, { maturity: '3Y', yield: 4.12 },
+    { maturity: '5Y', yield: 4.12 }, { maturity: '7Y', yield: 4.16 }, { maturity: '10Y', yield: 4.22 },
+    { maturity: '20Y', yield: 4.47 }, { maturity: '30Y', yield: 4.41 },
   ],
   yieldSpreadHistory: [
     { date: 'Jan 24', spread: -0.35 }, { date: 'Mar 24', spread: -0.42 }, { date: 'May 24', spread: -0.38 },
     { date: 'Jul 24', spread: -0.20 }, { date: 'Sep 24', spread: 0.05 }, { date: 'Nov 24', spread: 0.12 },
-    { date: 'Jan 25', spread: 0.08 }, { date: 'Mar 25', spread: 0.15 }, { date: 'May 25', spread: 0.18 },
-    { date: 'Jul 25', spread: 0.14 }, { date: 'Sep 25', spread: 0.16 }, { date: 'Nov 25', spread: 0.17 },
+    { date: 'Jan 25', spread: 0.05 }, { date: 'Mar 25', spread: 0.08 }, { date: 'May 25', spread: 0.04 },
+    { date: 'Jul 25', spread: 0.06 }, { date: 'Sep 25', spread: 0.08 }, { date: 'Dec 25', spread: 0.08 },
   ],
   fedFundsHistory: [
     { date: 'Jan 24', rate: 5.50 }, { date: 'Mar 24', rate: 5.50 }, { date: 'May 24', rate: 5.50 },
-    { date: 'Jul 24', rate: 5.50 }, { date: 'Sep 24', rate: 5.00 }, { date: 'Nov 24', rate: 4.75 },
-    { date: 'Jan 25', rate: 4.50 }, { date: 'Mar 25', rate: 4.50 }, { date: 'May 25', rate: 4.50 },
-    { date: 'Jul 25', rate: 4.50 }, { date: 'Sep 25', rate: 4.50 }, { date: 'Nov 25', rate: 4.50 },
+    { date: 'Jul 24', rate: 5.50 }, { date: 'Sep 24', rate: 5.00 }, { date: 'Oct 24', rate: 4.75 },
+    { date: 'Nov 24', rate: 4.50 }, { date: 'Dec 24', rate: 4.25 }, { date: 'Mar 25', rate: 4.25 },
+    { date: 'Jun 25', rate: 4.00 }, { date: 'Sep 25', rate: 3.875 }, { date: 'Dec 25', rate: 3.625 },
   ],
   housingData: [
     { date: 'Jan 24', starts: 1.42, mortgage: 6.64 }, { date: 'Mar 24', starts: 1.32, mortgage: 6.82 },
@@ -119,7 +120,7 @@ const DEMO_DATA = {
     { date: 'Sep 24', starts: 1.35, mortgage: 6.20 }, { date: 'Nov 24', starts: 1.31, mortgage: 6.84 },
     { date: 'Jan 25', starts: 1.36, mortgage: 6.95 }, { date: 'Mar 25', starts: 1.38, mortgage: 6.72 },
     { date: 'May 25', starts: 1.41, mortgage: 6.58 }, { date: 'Jul 25', starts: 1.39, mortgage: 6.45 },
-    { date: 'Sep 25', starts: 1.42, mortgage: 6.38 }, { date: 'Nov 25', starts: 1.40, mortgage: 6.52 },
+    { date: 'Sep 25', starts: 1.42, mortgage: 6.38 }, { date: 'Dec 25', starts: 1.40, mortgage: 6.22 },
   ],
   laborMarket: {
     jolts: 7.74, // Job openings (millions)
@@ -128,10 +129,10 @@ const DEMO_DATA = {
     participation: 62.5, // Labor force participation (%)
   },
   recessionIndicators: {
-    sahmRule: 0.37, // Below 0.5 = no recession signal
-    leadingIndex: 0.2, // Conference Board LEI
+    sahmRule: 0.43, // Below 0.5 = no recession signal (elevated but below threshold)
+    leadingIndex: -0.1, // Conference Board LEI (slightly negative)
     yieldInversion: false,
-    unemploymentTrend: 'stable',
+    unemploymentTrend: 'rising',
   },
 }
 

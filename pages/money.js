@@ -20,24 +20,24 @@ const DataTag = ({ isLive, label, lastUpdate }) => {
   );
 };
 
-// Demo data
+// Demo data - Updated Dec 2025 with latest available
 const DEMO_DATA = {
-  cpiCurrent: 314.5,
+  cpiCurrent: 324.368,  // Sep 2025 CPI (latest available due to shutdown)
   cpiJan2020: 257.971,
   consumerSentiment: {
-    current: 74.0,
-    prior: 71.8,
-    change: 2.2,
+    current: 53.3,  // Preliminary Dec 2025
+    prior: 51.0,    // Nov 2025
+    change: 2.3,
     history: [
-      { date: 'Jan 25', value: 71.1 }, { date: 'Feb 25', value: 67.8 },
-      { date: 'Mar 25', value: 57.0 }, { date: 'Apr 25', value: 52.2 },
+      { date: 'Jan 25', value: 73.2 }, { date: 'Feb 25', value: 64.7 },
+      { date: 'Mar 25', value: 57.9 }, { date: 'Apr 25', value: 52.2 },
       { date: 'May 25', value: 50.8 }, { date: 'Jun 25', value: 62.0 },
-      { date: 'Jul 25', value: 64.0 }, { date: 'Aug 25', value: 67.9 },
-      { date: 'Sep 25', value: 70.1 }, { date: 'Oct 25', value: 70.5 },
-      { date: 'Nov 25', value: 71.8 }, { date: 'Dec 25', value: 74.0 },
+      { date: 'Jul 25', value: 64.0 }, { date: 'Aug 25', value: 58.2 },
+      { date: 'Sep 25', value: 55.1 }, { date: 'Oct 25', value: 53.6 },
+      { date: 'Nov 25', value: 51.0 }, { date: 'Dec 25', value: 53.3 },
     ],
   },
-  mortgage30: 6.52,
+  mortgage30: 6.22,  // Dec 11, 2025
 };
 
 // Inflation Wallet Component - Shows purchasing power loss

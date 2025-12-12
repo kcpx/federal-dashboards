@@ -2,19 +2,19 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
-// Demo data for when API fails
+// Demo data for when API fails - Updated Dec 2025
 const DEMO_SUMMARY = {
   economy: {
-    gdp: { value: '28.64', change: '2.8', unit: 'T', period: 'Q3 2025' },
-    unemployment: { value: 4.1, change: '-0.1', unit: '%', period: 'Nov 2025' },
-    inflation: { value: '2.7', unit: '%', label: 'YoY', period: 'Nov 2025' },
-    fedRate: { value: 4.50, unit: '%', period: 'Nov 2025' },
+    gdp: { value: '23.40', change: '3.8', unit: 'T', period: 'Q2 2025' },  // Q2 final, Q3 not yet released
+    unemployment: { value: 4.4, change: '0.1', unit: '%', period: 'Sep 2025' },  // Oct data missed due to shutdown
+    inflation: { value: '3.0', unit: '%', label: 'YoY', period: 'Sep 2025' },  // Oct data missed, Nov on Dec 18
+    fedRate: { value: 3.625, unit: '%', period: 'Dec 2025' },  // Cut to 3.5-3.75% on Dec 10
   },
   consumer: {
-    sentiment: { value: '74.0', change: '2.2', period: 'Dec 2025' },
+    sentiment: { value: '53.3', change: '2.3', period: 'Dec 2025' },  // Preliminary Dec from U of Michigan
     gas: { value: '2.94', change: '-5.2', unit: '/gal', period: '2025-12-08' },
-    food: { value: '2.4', unit: '%', label: 'YoY', period: 'Nov 2025' },
-    mortgage: { value: '6.52', change: '-0.08', unit: '%', period: 'Dec 2025' },
+    food: { value: '2.4', unit: '%', label: 'YoY', period: 'Sep 2025' },  // Latest available
+    mortgage: { value: '6.22', change: '0.03', unit: '%', period: 'Dec 2025' },  // Dec 11, 2025
   },
 };
 
