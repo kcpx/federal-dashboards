@@ -73,8 +73,9 @@ async function fetchGasPrices() {
 
   try {
     // Weekly retail gas prices - national average
-    const regularUrl = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${EIA_API_KEY}&frequency=weekly&data[0]=value&facets[product][]=EPM0&facets[duession][]=NUS&sort[0][column]=period&sort[0][direction]=desc&length=52`;
-    const dieselUrl = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${EIA_API_KEY}&frequency=weekly&data[0]=value&facets[product][]=EPD2D&facets[duession][]=NUS&sort[0][column]=period&sort[0][direction]=desc&length=52`;
+    // EPMR = Regular Gasoline, EPD2D = No 2 Diesel, NUS = U.S. National
+    const regularUrl = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${EIA_API_KEY}&frequency=weekly&data[0]=value&facets[product][]=EPMR&facets[duoarea][]=NUS&sort[0][column]=period&sort[0][direction]=desc&length=52`;
+    const dieselUrl = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${EIA_API_KEY}&frequency=weekly&data[0]=value&facets[product][]=EPD2D&facets[duoarea][]=NUS&sort[0][column]=period&sort[0][direction]=desc&length=52`;
 
     const [regularRes, dieselRes] = await Promise.all([
       fetch(regularUrl),
