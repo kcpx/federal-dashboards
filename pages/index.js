@@ -5,8 +5,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Federal Economic Dashboards</title>
-        <meta name="description" content="FRED Economic Dashboard & Housing Affordability Calculator" />
+        <title>DataGov Live</title>
+        <meta name="description" content="Real-time economic data dashboards — FRED, Treasury, Housing, and Cost of Living" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -21,7 +21,7 @@ export default function Home() {
             </div>
             
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              Federal Economic Dashboards
+              DataGov Live
             </h1>
 
             <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto px-4">
