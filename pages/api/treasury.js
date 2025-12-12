@@ -126,8 +126,9 @@ export default async function handler(req, res) {
     // Get GDP for debt-to-GDP ratio (use FRED data)
     let debtToGDP = null;
     try {
+      // Use realtime_end=9999-12-31 to always get the most current data vintage
       const gdpRes = await fetch(
-        `https://api.stlouisfed.org/fred/series/observations?series_id=GDP&api_key=${process.env.FRED_API_KEY || 'd9ae3ee03b6f5e1e259a6d04f7ff1eb8'}&file_type=json&sort_order=desc&limit=1`
+        `https://api.stlouisfed.org/fred/series/observations?series_id=GDP&api_key=${process.env.FRED_API_KEY || 'd9ae3ee03b6f5e1e259a6d04f7ff1eb8'}&file_type=json&sort_order=desc&limit=1&realtime_start=1776-07-04&realtime_end=9999-12-31`
       );
       const gdpData = await gdpRes.json();
       if (gdpData.observations?.[0]) {

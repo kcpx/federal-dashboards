@@ -9,8 +9,9 @@ const HUD_FMR_BASE = 'https://www.huduser.gov/hudapi/public/fmr/data';
 const HUD_IL_BASE = 'https://www.huduser.gov/hudapi/public/il/data'; // Income limits
 
 async function fetchFredSeries(seriesId, limit = 5) {
-  const url = `${FRED_BASE}?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=${limit}`;
-  
+  // Use realtime_end=9999-12-31 to always get the most current data vintage
+  const url = `${FRED_BASE}?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=${limit}&realtime_start=1776-07-04&realtime_end=9999-12-31`;
+
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`FRED API error: ${res.status}`);
