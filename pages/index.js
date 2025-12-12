@@ -1,7 +1,73 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
+
+// Demo data for when API fails
+const DEMO_SUMMARY = {
+  economy: {
+    gdp: { value: '28.64', change: '2.8', unit: 'T', period: 'Q3 2025' },
+    unemployment: { value: 4.1, change: '-0.1', unit: '%', period: 'Nov 2025' },
+    inflation: { value: '2.7', unit: '%', label: 'YoY', period: 'Nov 2025' },
+    fedRate: { value: 4.50, unit: '%', period: 'Nov 2025' },
+  },
+  consumer: {
+    sentiment: { value: '74.0', change: '2.2', period: 'Dec 2025' },
+    gas: { value: '2.94', change: '-5.2', unit: '/gal', period: '2025-12-08' },
+    food: { value: '2.4', unit: '%', label: 'YoY', period: 'Nov 2025' },
+    mortgage: { value: '6.52', change: '-0.08', unit: '%', period: 'Dec 2025' },
+  },
+};
+
+// Stat Card Component
+const StatCard = ({ label, value, unit, change, period, prefix = '', isPositiveGood = true }) => {
+  const changeNum = parseFloat(change);
+  const hasChange = change !== null && change !== undefined && !isNaN(changeNum);
+  const isPositive = changeNum > 0;
+  const changeColor = hasChange
+    ? (isPositiveGood ? (isPositive ? 'text-emerald-400' : 'text-red-400') : (isPositive ? 'text-red-400' : 'text-emerald-400'))
+    : 'text-slate-400';
+
+  return (
+    <div className="bg-slate-800/50 rounded-lg p-3 md:p-4">
+      <p className="text-slate-400 text-xs mb-1">{label}</p>
+      <div className="flex items-baseline gap-1">
+        <span className="text-xl md:text-2xl font-bold text-white">
+          {prefix}{value || '--'}{unit && <span className="text-sm md:text-base font-normal text-slate-400">{unit}</span>}
+        </span>
+        {hasChange && (
+          <span className={`text-xs md:text-sm ${changeColor}`}>
+            {isPositive ? '↑' : '↓'}{Math.abs(changeNum)}
+          </span>
+        )}
+      </div>
+      {period && <p className="text-slate-500 text-xs mt-1">{period}</p>}
+    </div>
+  );
+};
 
 export default function Home() {
+  const [summary, setSummary] = useState(DEMO_SUMMARY);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  useEffect(() => {
+    async function fetchSummary() {
+      try {
+        const res = await fetch('/api/summary');
+        if (!res.ok) throw new Error('Failed to fetch summary');
+        const data = await res.json();
+        setSummary(data);
+        setLastUpdated(new Date(data.timestamp));
+      } catch (err) {
+        console.error('Error fetching summary:', err);
+        // Keep demo data
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSummary();
+  }, []);
+
   return (
     <>
       <Head>
@@ -14,19 +80,128 @@ export default function Home() {
       <main className="min-h-screen bg-slate-900 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8 md:mb-16 pt-6 md:pt-12">
+          <div className="text-center mb-8 md:mb-12 pt-6 md:pt-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 rounded-full border border-slate-700 mb-6">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
               <span className="text-slate-400 text-sm font-medium">LIVE DATA</span>
             </div>
-            
+
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               DataGov Live
             </h1>
 
             <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto px-4">
-              Real-time economic data from FRED and HUD. Built for federal analysts, policy researchers, and curious citizens.
+              Real-time economic data from FRED, Treasury, and EIA. Built for analysts, researchers, and curious citizens.
             </p>
+          </div>
+
+          {/* Economy at a Glance */}
+          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900 border border-slate-700 rounded-xl p-4 md:p-6 mb-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <h2 className="text-lg font-semibold text-white">Economy at a Glance</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                {loading ? (
+                  <span className="text-slate-500 text-xs">Loading...</span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs text-emerald-400">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    LIVE
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <StatCard
+                label="Real GDP"
+                value={summary.economy.gdp.value}
+                unit={summary.economy.gdp.unit}
+                change={summary.economy.gdp.change}
+                period={summary.economy.gdp.period}
+                prefix="$"
+                isPositiveGood={true}
+              />
+              <StatCard
+                label="Unemployment"
+                value={summary.economy.unemployment.value}
+                unit={summary.economy.unemployment.unit}
+                change={summary.economy.unemployment.change}
+                period={summary.economy.unemployment.period}
+                isPositiveGood={false}
+              />
+              <StatCard
+                label="Inflation (CPI)"
+                value={summary.economy.inflation.value}
+                unit={`${summary.economy.inflation.unit} ${summary.economy.inflation.label || ''}`}
+                period={summary.economy.inflation.period}
+                isPositiveGood={false}
+              />
+              <StatCard
+                label="Fed Funds Rate"
+                value={summary.economy.fedRate.value}
+                unit={summary.economy.fedRate.unit}
+                period={summary.economy.fedRate.period}
+              />
+            </div>
+          </div>
+
+          {/* Consumer at a Glance */}
+          <div className="bg-gradient-to-br from-slate-800/80 to-slate-900 border border-slate-700 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <h2 className="text-lg font-semibold text-white">Consumer at a Glance</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                {loading ? (
+                  <span className="text-slate-500 text-xs">Loading...</span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs text-emerald-400">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    LIVE
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              <StatCard
+                label="Consumer Sentiment"
+                value={summary.consumer.sentiment.value}
+                change={summary.consumer.sentiment.change}
+                period={summary.consumer.sentiment.period}
+                isPositiveGood={true}
+              />
+              <StatCard
+                label="Gas Price"
+                value={summary.consumer.gas?.value}
+                unit={summary.consumer.gas?.unit}
+                change={summary.consumer.gas?.change}
+                period={summary.consumer.gas?.period}
+                prefix="$"
+                isPositiveGood={false}
+              />
+              <StatCard
+                label="Food Prices"
+                value={summary.consumer.food.value}
+                unit={`${summary.consumer.food.unit} ${summary.consumer.food.label || ''}`}
+                period={summary.consumer.food.period}
+                isPositiveGood={false}
+              />
+              <StatCard
+                label="30Y Mortgage"
+                value={summary.consumer.mortgage.value}
+                unit={summary.consumer.mortgage.unit}
+                change={summary.consumer.mortgage.change}
+                period={summary.consumer.mortgage.period}
+                isPositiveGood={false}
+              />
+            </div>
           </div>
 
           {/* AI Briefing Banner */}
@@ -42,7 +217,6 @@ export default function Home() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-lg md:text-xl font-bold text-white">AI Economic Briefing</h2>
-                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs font-medium">NEW</span>
                     </div>
                     <p className="text-slate-400 text-xs md:text-sm mt-1">
                       Daily AI-generated analysis of economic conditions — like having a Fed economist explain the data
@@ -169,10 +343,7 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-lg md:text-xl font-bold text-white">Cost of Living</h2>
-                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs font-medium">NEW</span>
-                  </div>
+                  <h2 className="text-lg md:text-xl font-bold text-white">Cost of Living</h2>
                 </div>
 
                 <p className="text-slate-400 text-xs md:text-sm mb-3 md:mb-4">
@@ -180,7 +351,7 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-wrap gap-1.5 mb-3 md:mb-4">
-                  {['Eggs', 'Milk', 'Gas', 'YoY Change'].map(tag => (
+                  {['Food', 'Gas', 'Diesel', 'YoY Change'].map(tag => (
                     <span key={tag} className="px-2 py-0.5 bg-slate-700/50 text-slate-300 rounded-full text-xs">
                       {tag}
                     </span>
@@ -228,7 +399,7 @@ export default function Home() {
             </div>
           </div>
 
-                  </div>
+        </div>
       </main>
     </>
   )
