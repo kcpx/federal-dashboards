@@ -136,6 +136,20 @@ const DEMO_DATA = {
   // CPI data for Inflation Wallet (fallback values)
   cpiCurrent: 314.5,  // Approximate Dec 2025
   cpiJan2020: 257.971, // Fixed baseline
+  // Consumer Sentiment
+  consumerSentiment: {
+    current: 74.0,
+    prior: 71.8,
+    change: 2.2,
+    history: [
+      { date: 'Jan 25', value: 71.1 }, { date: 'Feb 25', value: 67.8 },
+      { date: 'Mar 25', value: 57.0 }, { date: 'Apr 25', value: 52.2 },
+      { date: 'May 25', value: 50.8 }, { date: 'Jun 25', value: 62.0 },
+      { date: 'Jul 25', value: 64.0 }, { date: 'Aug 25', value: 67.9 },
+      { date: 'Sep 25', value: 70.1 }, { date: 'Oct 25', value: 70.5 },
+      { date: 'Nov 25', value: 71.8 }, { date: 'Dec 25', value: 74.0 },
+    ],
+  },
 }
 
 // Inflation Wallet Component - Shows purchasing power loss
@@ -640,6 +654,13 @@ export default function FredDashboard() {
           // CPI data for Inflation Wallet
           cpiCurrent: liveData.cpiCurrent || prev.cpiCurrent,
           cpiJan2020: liveData.cpiJan2020 || prev.cpiJan2020,
+          // Consumer Sentiment
+          consumerSentiment: liveData.consumerSentiment ? {
+            current: liveData.consumerSentiment.current || prev.consumerSentiment.current,
+            prior: liveData.consumerSentiment.prior || prev.consumerSentiment.prior,
+            change: liveData.consumerSentiment.change || prev.consumerSentiment.change,
+            history: liveData.consumerSentiment.history || prev.consumerSentiment.history,
+          } : prev.consumerSentiment,
         }))
         setLastUpdated(new Date(liveData.timestamp))
         setError(null)
@@ -957,6 +978,124 @@ export default function FredDashboard() {
                 </div>
               </ChartCard>
             </div>
+          </div>
+
+          {/* Consumer Sentiment */}
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 className="text-lg md:text-xl font-bold text-white">Consumer Sentiment</h2>
+                <p className="text-slate-400 text-sm">University of Michigan Index — How Americans feel about the economy</p>
+              </div>
+              <DataTag isLive={true} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {/* Current Reading */}
+              <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/20 border border-blue-500/30 rounded-xl p-4 md:p-6 text-center">
+                <p className="text-slate-400 text-sm mb-2">Current Index</p>
+                <p className="text-4xl md:text-5xl font-bold text-white mb-2">
+                  {data.consumerSentiment?.current?.toFixed(1) || '--'}
+                </p>
+                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded ${
+                  parseFloat(data.consumerSentiment?.change) > 0
+                    ? 'bg-emerald-500/20 text-emerald-400'
+                    : 'bg-red-500/20 text-red-400'
+                }`}>
+                  <span>{parseFloat(data.consumerSentiment?.change) > 0 ? '↑' : '↓'}</span>
+                  <span>{Math.abs(parseFloat(data.consumerSentiment?.change || 0)).toFixed(1)} pts</span>
+                </div>
+                <p className="text-slate-500 text-xs mt-2">vs prior month</p>
+              </div>
+
+              {/* Sentiment Gauge */}
+              <div className="bg-slate-700/30 rounded-xl p-4 md:p-6">
+                <p className="text-slate-400 text-sm mb-3 text-center">Sentiment Level</p>
+                <div className="relative h-4 bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500 rounded-full mb-2">
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 w-3 h-6 bg-white rounded shadow-lg border-2 border-slate-800"
+                    style={{ left: `${Math.min(Math.max((data.consumerSentiment?.current || 70) / 120 * 100, 5), 95)}%`, transform: 'translate(-50%, -50%)' }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>Pessimistic</span>
+                  <span>Neutral</span>
+                  <span>Optimistic</span>
+                </div>
+                <div className="mt-4 text-center">
+                  <p className={`text-lg font-semibold ${
+                    (data.consumerSentiment?.current || 0) >= 80 ? 'text-emerald-400' :
+                    (data.consumerSentiment?.current || 0) >= 60 ? 'text-amber-400' : 'text-red-400'
+                  }`}>
+                    {(data.consumerSentiment?.current || 0) >= 80 ? 'Optimistic' :
+                     (data.consumerSentiment?.current || 0) >= 60 ? 'Cautious' : 'Pessimistic'}
+                  </p>
+                  <p className="text-slate-500 text-xs mt-1">
+                    Historical avg: ~85 | 2008 low: 55
+                  </p>
+                </div>
+              </div>
+
+              {/* Historical Context */}
+              <div className="bg-slate-700/30 rounded-xl p-4 md:p-6">
+                <p className="text-slate-400 text-sm mb-3">What it means</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-400">●</span>
+                    <span className="text-slate-300">Above 80: Consumers confident, spending likely</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-amber-400">●</span>
+                    <span className="text-slate-300">60-80: Mixed feelings, cautious spending</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-red-400">●</span>
+                    <span className="text-slate-300">Below 60: Pessimistic, pullback expected</span>
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-slate-600">
+                  <p className="text-slate-500 text-xs">
+                    Leading indicator for consumer spending, which drives ~70% of GDP.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Sentiment History Chart */}
+            {data.consumerSentiment?.history && data.consumerSentiment.history.length > 0 && (
+              <div className="mt-6">
+                <p className="text-slate-400 text-sm mb-3">12-Month Trend</p>
+                <div className="h-40 md:h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data.consumerSentiment.history}>
+                      <defs>
+                        <linearGradient id="sentimentGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+                      <YAxis domain={[40, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 shadow-xl">
+                                <p className="text-slate-400 text-xs">{label}</p>
+                                <p className="text-white font-medium">{payload[0].value?.toFixed(1)}</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <ReferenceLine y={85} stroke="#64748b" strokeDasharray="3 3" label={{ value: 'Avg', fill: '#64748b', fontSize: 10 }} />
+                      <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} fill="url(#sentimentGradient)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Recession Indicators */}
